@@ -1,0 +1,24 @@
+Const MAP_WIDTH = 100
+Const MAP_HEIGHT = 100
+
+Const FS_NO_FIRE = 0
+Const FS_BURNING = 1
+Const FS_
+
+
+Const TILE_GRASS = 0
+Const TILE_TREE1 = 1
+Const TILE_TREE2 = 2
+Const TILE_TREE3 = 3
+Const TILE_ROAD = 4
+
+
+
+
+Dim mapFireState(MAP_WIDTH, MAP_HEIGHT)
+Dim mapTiles(MAP_WIDTH, MAP_HEIGHT)
+
+Function GenerateMap()
+	
+EndFunction
+
