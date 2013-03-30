@@ -22,18 +22,10 @@ Function UpdateFireSpreading(t#, part)
 				EndIf
 				heat(x,y) = heat(x,y) + tileHeatValues(mapTiles(x,y)) * t#
 				If Rnd(t#) < RANDOM_HEAT_CHANCE Then
-					If WIND_SPEED_X > 0 Then
-						xx = x + Rnd(WIND_SPEED_X)
-					Else
-						xx = x + Rnd(WIND_SPEED_X,0)
-					EndIf
-					If WIND_SPEED_Y > 0 Then
-						yy = y + Rnd(WIND_SPEED_Y)
-					Else
-						yy = y + Rnd(WIND_SPEED_Y,0)
-					EndIf
+					xx = x + Rnd(1) * WIND_SPEED_X
+					yy = y + Rnd(1) * WIND_SPEED_Y
 					If xx >= 0 And xx < MAP_WIDTH And yy >= 0 And yy < MAP_HEIGHT Then
-						If Rnd(1) < tileFlamingChance(mapTiles(xx,yy)) / Log(Distance(xx,yy,x,y)) Then
+						If Rnd(1) < tileFlamingChance(mapTiles(xx,yy)) Then
 							burnTimes(xx,yy) = BURN_TIME_START
 							heat(xx,yy) = heat(xx,yy) + 10
 						EndIf

@@ -22,7 +22,7 @@ coptery#=0
 
 
 main:
-    GenerateMap("kokeilut/testi.png", 0)
+    GenerateMap("maps/testi.png", 0)
     lastUpdate = Timer()
     part = 0
     Repeat
@@ -53,16 +53,18 @@ main:
 			cx = cx + SW*1.5 : cy = cy + SH*1.5
 			For tx=0 To MAP_WIDTH-1
 				For ty=0 To MAP_HEIGHT-1
+					burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/200.0,1)
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
 			Next tx
 			cx = cx - SW*1.5 : cy = cy - SH*1.5
-			DrawImage gui,300,250
+			//DrawImage gui,300,250
 		Else	
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
 			
 				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
+					burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
@@ -70,8 +72,19 @@ main:
 			Next tx
 			DrawImage gui,0,0
 		EndIf
+		
 		Gosub drawcopter
-
+		
+        // Update particles
+        For p.particle = Each particle
+            DrawImage pImgs(p\t, p\f), p\x, p\y
+            p\x + p\xv
+            p\y + p\yv
+            p\xv + p\xa
+            p\yv + p\ya
+            p\l - 1
+            If p\l < 1 Then Delete p
+        Next p
 
         DrawToScreen
         If doublePx Then Gosub scalebuffer

@@ -4,6 +4,17 @@ Const SW=200
 Const SH=150
 SCREEN SW*4,SH*4
 
+Type particle
+    Field t
+    Field x
+    Field y
+    Field xv As Float
+    Field yv As Float
+    Field xa As Float
+    Field ya As Float
+    Field f
+    Field l
+EndType
 
 Dim Tiles(TILE_COUNT,4)
 Dim flames(2,4)
@@ -11,6 +22,27 @@ Dim copter(3)
 loadtiles()
 loadflames()
 loadcopter()
+
+// Load particle images
+Dim pImgs(2,32)
+pImg = LoadImage("gfx/tuli_partikkeli.png")
+For i=0 To 32
+	j=MakeImage(1,1)
+	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+    pImgs(0,i)=j
+Next i
+pImg = LoadImage("gfx/savu_partikkeli.png")
+For i=0 To 32
+	j=MakeImage(1,1)
+	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+    pImgs(1,i)=j
+Next i
+pImg = LoadImage("gfx/vaahto_partikkeli.png")
+For i=0 To 32
+	j=MakeImage(1,1)
+	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+    pImgs(2,i)=j
+Next i
 
 cx = 200
 cy = 50
@@ -32,7 +64,6 @@ Return
 inversekamera:
 	tx = (sx*TH+sy*TW-cx*TH-cy*TW)/(TW*TH)
 	ty = (-sx*TH+sy*TW+cx*TH-cy*TW)/(TW*TH)
-
 Return
 
 drawcopter:
