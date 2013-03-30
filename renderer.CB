@@ -14,7 +14,7 @@ cy = 50
 
 drawTile:
 	Gosub kamera
-	If Tiles(id,0) Then DrawImage Tiles(id,0),sx,sy-ImageHeight(Tiles(id,0))
+	If Tiles(id,heat) Then DrawImage Tiles(id,heat),sx,sy-ImageHeight(Tiles(id,0))
 	Dot sx,sy
 	'
 Return
@@ -34,9 +34,11 @@ Function loadtiles()
 	Tiles(TILE_HAY,0)=maketile(img,2)
 	Tiles(TILE_ROAD,0)=maketile(img,3)
 	Tiles(TILE_WATER,0)=maketile(img,4)
+	Tiles(TILE_BURNED_GRASS,0)=maketile(img,5)
 	//Trees
 	img=LoadImage("gfx/puu_isokuusi.png")
 	Tiles(TILE_TREE1,0)=maketile(img,0)	
+	Tiles(TILE_BURNED_TREE,0)=maketile(img,3)	
 	img=LoadImage("gfx/puu_isokuusi2.png")
 	Tiles(TILE_TREE2,0)=maketile(img,0)
 	img=LoadImage("gfx/puu_isokuusi3.png")
