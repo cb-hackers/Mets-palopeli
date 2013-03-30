@@ -5,10 +5,14 @@ Include	"renderer.cb"
 Include "firespreading.cb"
 GenerateMap("kokeilut/testi.png", 0)
 
+gBuffer = MakeImage(SW*4,SH*4)
+
 lastUpdate = Timer()
 part = 0
 Repeat
 	SetWindow "FPS:" + FPS()
+	DrawToImage gbuffer
+	Cls
 	If KeyDown(28) Then
 		GrowTrees()
 	EndIf
@@ -23,10 +27,30 @@ Repeat
 	For tx=0 To MAP_WIDTH-1
 		For ty=0 To MAP_HEIGHT-1
 			id=	mapTiles(tx,ty)
-			temperature=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
+			burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
 			Gosub drawTile
 		Next ty
 	Next tx
+	DrawToScreen
+	if Not KeyDown(cbkeyz) Then Gosub scalebuffer
+	DrawImage gbuffer,0,0
 	
 	DrawScreen
 Forever
+
+
+scaleBuffer:
+    For sb_i=SH To 0 Step -1
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
+		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
+    next sb_i
+    for sb_i=SW To 0 step -1
+        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,image(gBuffer),image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,image(gBuffer),image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,image(gBuffer),image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,image(gBuffer),image(gBuffer)
+
+    next sb_i
+Return

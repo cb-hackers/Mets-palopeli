@@ -6,7 +6,9 @@ SCREEN SW*4,SH*4
 
 
 Dim Tiles(TILE_COUNT,4)
+Dim flames(1,4)
 loadtiles()
+loadflames()
 
 
 cx = 200
@@ -14,7 +16,8 @@ cy = 50
 
 drawTile:
 	Gosub kamera
-	If Tiles(id,temperature) Then DrawImage Tiles(id,temperature),sx,sy-ImageHeight(Tiles(id,temperature))
+	If Tiles(id,burning) Then DrawImage Tiles(id,burning),sx,sy-ImageHeight(Tiles(id,burning))
+	If heat(tx,ty)>10 Then DrawImage flames(0,Rand(3)),sx,sy-ImageHeight(flames(0,0))
 	Dot sx,sy
 	'
 Return
@@ -24,7 +27,14 @@ kamera:
 	sy=(tx+ty)/2.0*TH	+cy
 Return
 
-
+Function loadflames()
+	img=LoadImage("gfx/tuli.png")
+	For i=0 To 3
+		flames(0,i)= maketile(img,i)
+		flames(1,i)= maketile(img,i+4)
+	Next i
+	
+EndFunction
 
 Function loadtiles()
 	//Ground
