@@ -1,3 +1,4 @@
+Include "map.cb" 'for vars
 Include "renderer.cb" ' for tiles
 'Include "main.cb"
 gBuffer = MakeImage(SW*4,SH*4)
@@ -18,25 +19,88 @@ scaleBuffer:
 Return
 'end includes
 
+Type particle
+    Field t
+    Field x
+    Field y
+    Field xv As Float
+    Field yv As Float
+    Field f
+EndType
+
 
 SetWindow "Mets-palopeli ALPHA v0.0.0 PREVIEW TECH DEMO"
 
 menuBg = LoadImage("gfx/menu.png")
 
+smallFont = LoadFont("fixedsys")
+SetFont smallFont
+
+
+Dim pImgs(2,32)
+
+pImg = LoadImage("gfx/tuli_partikkeli.png")
+For i=0 To 32
+	j=MakeImage(1,1)
+	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+    pImgs(0,i)=j
+Next i
+pImg = LoadImage("gfx/savu_partikkeli.png")
+For i=0 To 32
+	j=MakeImage(1,1)
+	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+    pImgs(1,i)=j
+Next i
+
 menuX = 60
 menuW = 80
-menuH = 20
-menuPlayY = 38
+menuH = 18
+menuPlayY = 40
+menuEndY = 58
 
 menu:
     DrawToImage gBuffer
     Cls
-    hitx = 0
-    If MouseX()/4 > menuX And MouseX()/4 < menuX+menuW Then hitx = 1
-    If hitx And MouseY()/4 > menuPlayY And MouseY()/4 < menuPlayY+menuH Then Text 0,0,"play"
-    
     DrawImage menuBg, 0, 0
+    DrawImage flames(1,Rand(3)),128,-3
+    
+    Color cbred
+    Line 143,22, 162,28
+    Text 148, -5+Rand(2), "alpha"
+    
+    hitx = 0
+    hitNum = 0
+    
+    If MouseX()/4 > menuX And MouseX()/4 < menuX+menuW Then hitx = 1
+    If hitx And MouseY()/4 > menuPlayY And MouseY()/4 < menuPlayY+menuH Then 
+        DrawImage flames(1-MouseDown(1),Rand(3)),menuX,menuPlayY-15+Rand(1)
+        hitNum = 1
+    EndIf
+    If hitx And MouseY()/4 > menuEndY And MouseY()/4 < menuEndY+menuH Then 
+        DrawImage flames(1-MouseDown(1),Rand(3)),menuX,menuEndy-15+Rand(1)
+        hitNum = 2
+    EndIf
+    If MouseUp(1) Then
+        Select hitNum
+            Case 1
+                'play
+            Case 2
+                End
+        EndSelect
+    EndIf
+    
+    For p.particle = Each particle
+        DrawImage pImgs(p\t, p\f), p\x, p\y
+        p\x + p\xv
+        p\y + p\yv
+        p\yv + 0.01
+    Next p
+    
 Return
+
+Function fire(x, y)
+    
+EndFunction
 
 'testloop
 valikko:
