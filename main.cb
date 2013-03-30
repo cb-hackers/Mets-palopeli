@@ -6,14 +6,17 @@ Include "firespreading.cb"
 GenerateMap("kokeilut/testi.png", 0)
 
 lastUpdate = Timer()
+part = 0
 Repeat
+	SetWindow "FPS:" + FPS()
 	If KeyDown(28) Then
 		GrowTrees()
 	EndIf
 	t# = (Timer() - lastUpdate) / 1000.0
 	lastUpdate = Timer()
 	If KeyDown(cbKeySpace) Then
-		UpdateFireSpreading(t#)
+		UpdateFireSpreading(t#, part)
+		part + 1
 	EndIf
 	cx=cx+(LeftKey()-RightKey())*4
 	cy=cy-(DownKey()-UpKey())*4
