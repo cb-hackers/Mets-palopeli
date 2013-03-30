@@ -1,0 +1,59 @@
+Function UpdateFireSpreading(t#)
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			If burnTimes(x,y) > 0 Then
+				burnTimes(x,y) = burnTimes(x,y) + t# * (0.7 + (heat(x,y) / MAX_HEAT)*0.3) 
+				If burnTimes(x,y) > tileBurnTimes(mapTiles(x,y)) Then
+					mapTiles(x,y) = TILE_BURNED
+					burnTimes(x,y) = 0
+				EndIf
+				heat(x,y) = heat(x,y) + tileHeatValues(mapTiles(x,y)) * t#
+				If Rnd(t#) < RANDOM_HEAT_CHANCE Then
+					If WIND_SPEED_X > 0 Then
+						xx = x + Rnd(-1,1) + Rnd(WIND_SPEED_X)
+					Else
+						xx = x + Rnd(-1,1) + Rnd(WIND_SPEED_X,0)
+					EndIf
+					If WIND_SPEED_Y > 0 Then
+						yy = y + Rnd(-1,1) + Rnd(WIND_SPEED_Y)
+					Else
+						yy = y + Rnd(-1,1) + Rnd(WIND_SPEED_Y,0)
+					EndIf
+					If xx >= 0 And xx < MAP_WIDTH And yy >= 0 And yy < MAP_HEIGHT Then
+						If Rnd(1) < tileFlamingChance(mapTiles(xx,yy)) Then
+							burnTimes(xx,yy) = BURN_TIME_START
+							heat(xx,yy) = heat(xx,yy) + 10
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		Next y
+	Next x
+	maxDist# = Sqrt(8)
+	wmx# = WIND_SPEED_X * WIND_EFFECT_MULT
+	wmy# = WIND_SPEED_Y * WIND_EFFECT_MULT
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			For xx = Max(0, x - 2) To Min(MAP_WIDTH - 1, x + 2)
+				For yy = Max(0, y - 2) To Min(MAP_HEIGHT - 1, y + 2)
+					If x <> xx And y <> yy Then
+						distMult# = 1.35 - Distance(x+ wmx#, y + wmy#, xx, yy) / maxDist#
+						mult# = distMult + (WIND_SPEED_X - (xx-x)) * distMult 
+						heat(xx, yy) = heat(xx, yy) + heat(x,y) * HEAT_TRANS * t# * distMult
+					EndIf
+				Next yy
+			Next xx
+			
+			If burnTimes(x,y) = 0 And heat(x,y) > tileFlamingHeatValue(mapTiles(x,y)) And tileFlamingHeatValue(mapTiles(x,y)) > 0 Then
+				burnTimes(x,y) = BURN_TIME_START
+			EndIf
+			heat(x,y) = heat(x,y) - heat(x,y) * HEAT_DISPENCE * t#
+		Next y
+	Next x
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			heat(x,y) = Min(heat(x,y), MAX_HEAT)
+		Next y
+	Next x
+	
+EndFunction
