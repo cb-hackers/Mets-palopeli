@@ -1,0 +1,54 @@
+Const TW=16
+Const TH=8
+Const SW=200
+Const SH=150
+SCREEN SW*4,SH*4
+
+Include "map.CB"
+
+Dim Tiles(TILE_COUNT,4)
+loadtiles()
+
+
+'id=TILE_GRASS:
+tx=0:ty=0:Gosub drawTile
+cx = 200
+cy = 50
+Repeat
+cx=cx+(LeftKey()-RightKey())*4
+cy=cy-(DownKey()-UpKey())*4
+For tx=0 To 100
+	For ty=0 To 100
+		Gosub drawTile
+	Next ty
+Next tx
+DrawScreen
+Forever
+
+drawTile:
+	Gosub kamera
+	DrawImage Tiles(id,0),sx,sy-ImageHeight(Tiles(id,0))
+	Dot sx,sy
+	'
+Return
+
+kamera:
+	sx=(tx-ty)/2.0*TW	+cx
+	sy=(tx+ty)/2.0*TH	+cy
+Return
+
+
+
+Function loadtiles()
+	img=LoadImage("gfx/perusmaa.png")
+	Tiles(0,0)=maketile(img,0)
+	
+EndFunction
+
+Function maketile(img,frame)
+	h=ImageHeight(img)
+	i=MakeImage(16,h)
+	CopyBox frame*16,0,16,h,0,0,Image(img),Image(i)
+	Return i
+EndFunction
+
