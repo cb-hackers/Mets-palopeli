@@ -3,48 +3,57 @@
 Include "map.cb"
 Include	"renderer.cb"
 Include "firespreading.cb"
-GenerateMap("kokeilut/testi.png", 0)
 
 gBuffer = MakeImage(SW*4,SH*4)
 gui=LoadImage("gfx/gui.png")
+Include "menu.cb"
 
-lastUpdate = Timer()
-part = 0
 Repeat
-	SetWindow "FPS:" + FPS()
-	DrawToImage gbuffer
-	Cls
-	If KeyDown(28) Then
-		GrowTrees()
-	EndIf
-	t# = (Timer() - lastUpdate) / 1000.0
-	lastUpdate = Timer()
-	If KeyDown(cbKeySpace) Then
-		UpdateFireSpreading(t#, part)
-		part + 1
-	EndIf
-	cx=cx+(LeftKey()-RightKey())*4
-	cy=cy-(DownKey()-UpKey())*4
-	'sx=200
-	'sy=150
-	'Gosub inversekamera
-	xlimit=-cx/16-cy/8
-	ylimit=+cx/16-cy/8
-	For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
-		For ty=Max(0,ylimit-10) To Min(ylimit+20 ,MAP_HEIGHT-1)
-			id=	mapTiles(tx,ty)
-			burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
-			Gosub drawTile
-		Next ty
-	Next tx
-	DrawImage gui,0,0
-	DrawToScreen
-	if Not KeyDown(cbkeyz) Then Gosub scalebuffer
-	DrawImage gbuffer,0,0
-	
+    Gosub menu
+	Gosub scaleBuffer
+    DrawToScreen
+	DrawImage gBuffer,0,0
 	DrawScreen
 Forever
 
+
+main:
+    GenerateMap("kokeilut/testi.png", 0)
+    lastUpdate = Timer()
+    part = 0
+    Repeat
+        SetWindow "FPS:" + FPS()
+        DrawToImage gbuffer
+        Cls
+        If KeyDown(28) Then
+            GrowTrees()
+        EndIf
+        t# = (Timer() - lastUpdate) / 1000.0
+        lastUpdate = Timer()
+        If KeyDown(cbKeySpace) Then
+            UpdateFireSpreading(t#, part)
+            part + 1
+        EndIf
+        cx=cx+(LeftKey()-RightKey())*4
+        cy=cy-(DownKey()-UpKey())*4
+
+		xlimit=-cx/16-cy/8
+		ylimit=cx/16-cy/8
+
+		For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
+			For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
+				id=	mapTiles(tx,ty)
+				Gosub drawTile
+			Next ty
+		Next tx
+		DrawImage gui,0,0
+        DrawToScreen
+        If Not KeyDown(cbkeyz) Then Gosub scalebuffer
+        DrawImage gbuffer,0,0
+        
+        DrawScreen
+    Forever
+Return
 
 scaleBuffer:
     For sb_i=SH To 0 Step -1
