@@ -63,6 +63,16 @@ main:
 			DrawImage gui,0,0
 		EndIf
 		
+        // Update particles
+        For p.particle = Each particle
+            DrawImage pImgs(p\t, p\f), p\x, p\y
+            p\x + p\xv
+            p\y + p\yv
+            p\xv + p\xa
+            p\yv + p\ya
+            p\l - 1
+            If p\l < 1 Then Delete p
+        Next p
 
         DrawToScreen
         If doublePx Then Gosub scalebuffer
