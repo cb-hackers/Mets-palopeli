@@ -261,13 +261,11 @@ EndFunction
 SCREEN 800, 400, 0, 1
 SCREEN 200, 100, 0, 2
 
-GenerateMap("testi.bmp")
+GenerateMap("testi.png")
 i = 0
 Color cbRed
 lastUpdate = Timer()
-For i = 1 To 100
-	GrowTrees()
-Next i
+
 Repeat
 	DrawMap()
 	DrawHeatmap()
