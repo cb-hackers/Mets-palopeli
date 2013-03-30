@@ -19,15 +19,15 @@ Const HEAT_TRANS = 0.055
 Const MAX_HEAT = 1000
 Const MIN_HEAT = 0.1
 Const HEAT_DISPENCE = 0.6
-Const RANDOM_HEAT_CHANCE = 0.02
+Const RANDOM_HEAT_CHANCE = 0.015
 Const BURN_TIME_START = 0.001
 
 Global WIND_SPEED_X
 Global WIND_SPEED_Y
 WIND_SPEED_X = 3.0
-WIND_SPEED_X = 5.0
+WIND_SPEED_X = 4.0
 
-Const WIND_EFFECT_MULT = 0.15
+Const WIND_EFFECT_MULT = 0.12
 
 Dim tileBurnTimes#(TILE_COUNT)
 Dim tileHeatValues#(TILE_COUNT)
@@ -36,19 +36,19 @@ Dim tileFlamingChance#(TILE_COUNT)
 tileBurnTimes(TILE_EMPTY) = 0
 tileBurnTimes(TILE_ROAD) = 0
 tileBurnTimes(TILE_WATER) = 0
-tileBurnTimes(TILE_GRASS) = 15
-tileBurnTimes(TILE_HAY) = 19
-tileBurnTimes(TILE_TREE1) = 30
-tileBurnTimes(TILE_TREE2) = 35
-tileBurnTimes(TILE_TREE3) = 40
+tileBurnTimes(TILE_GRASS) = 8
+tileBurnTimes(TILE_HAY) = 12
+tileBurnTimes(TILE_TREE1) = 20
+tileBurnTimes(TILE_TREE2) = 25
+tileBurnTimes(TILE_TREE3) = 30
 tileBurnTimes(TILE_BURNED_TREE) = 0
 tileBurnTimes(TILE_BURNED_GRASS) = 0
 
 tileHeatValues(TILE_EMPTY) = 0
 tileHeatValues(TILE_ROAD) = 0
 tileHeatValues(TILE_WATER) = 0.0
-tileHeatValues(TILE_GRASS) = 120
-tileHeatValues(TILE_HAY) = 50
+tileHeatValues(TILE_GRASS) = 60
+tileHeatValues(TILE_HAY) = 100
 tileHeatValues(TILE_TREE1) = 150
 tileHeatValues(TILE_TREE2) = 200
 tileHeatValues(TILE_TREE3) = 250
@@ -58,19 +58,19 @@ tileHeatValues(TILE_BURNED_GRASS) = 0
 tileFlamingHeatValue(TILE_EMPTY) = 0
 tileFlamingHeatValue(TILE_ROAD) = 0
 tileFlamingHeatValue(TILE_WATER) = 0
-tileFlamingHeatValue(TILE_GRASS) = 40
+tileFlamingHeatValue(TILE_GRASS) = 50
 tileFlamingHeatValue(TILE_HAY) = 25
 tileFlamingHeatValue(TILE_TREE1) = 100
-tileFlamingHeatValue(TILE_TREE2) = 135
-tileFlamingHeatValue(TILE_TREE3) = 160
+tileFlamingHeatValue(TILE_TREE2) = 125
+tileFlamingHeatValue(TILE_TREE3) = 150
 tileFlamingHeatValue(TILE_BURNED_TREE) = 0
 tileFlamingHeatValue(TILE_BURNED_GRASS) = 0
 
 tileFlamingChance(TILE_EMPTY) = 0
 tileFlamingChance(TILE_ROAD) = 0
 tileFlamingChance(TILE_WATER) = 0
-tileFlamingChance(TILE_GRASS) = 0.7
-tileFlamingChance(TILE_HAY) = 0.1
+tileFlamingChance(TILE_GRASS) = 0.4
+tileFlamingChance(TILE_HAY) = 0.08
 tileFlamingChance(TILE_TREE1) = 0.03
 tileFlamingChance(TILE_TREE2) = 0.025
 tileFlamingChance(TILE_TREE3) = 0.02
