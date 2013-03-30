@@ -39,9 +39,10 @@ main:
             part + 1
         EndIf
 
-		Gosub updatecopter
 
 		doublePx = Not KeyDown(cbkeyZ)
+		If doublePx Then Gosub updatecopter
+		
         cx=cx+(LeftKey()-RightKey())*4
         cy=cy-(DownKey()-UpKey())*4
 
@@ -57,23 +58,24 @@ main:
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
+				If copterx=tx Or copterx=tx+1 Then Gosub drawcopter
 			Next tx
 			cx = cx - SW*1.5 : cy = cy - SH*1.5
 			//DrawImage gui,300,250
 		Else	
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
-			
 				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
 					burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
-				
+				ttx=tx
+				If Int(copterx)=tx-1 Or Int(copterx)=tx Then Gosub drawcopter
+				tx=ttx
 			Next tx
 			DrawImage gui,0,0
 		EndIf
 		
-		Gosub drawcopter
 		
         // Update particles
         For p.particle = Each particle
@@ -99,8 +101,8 @@ updatecopter:
 	sy=MouseY()/4.0
 	Gosub inversekamera
 	follow#=0.05
-	copterx=copterx*(1-follow)+tx*follow
-	coptery=coptery*(1-follow)+ty*follow
+	copterx=copterx*(1-follow)+(tx-1)*follow
+	coptery=coptery*(1-follow)+(ty+2)*follow
 Return
 
 scaleBuffer:

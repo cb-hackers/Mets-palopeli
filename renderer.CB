@@ -70,7 +70,7 @@ drawcopter:
 		tx=copterx#
 		ty=coptery#
 		Gosub kamera
-		DrawImage copter(0),sx,sy
+		DrawImage copter(0),sx,sy-imageheight(copter(0))
 Return 
 
 Function loadcopter()
