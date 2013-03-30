@@ -1,34 +1,3 @@
-'Include "map.cb" 
-'Include "renderer.cb"
-'Include "main.cb"
-'gBuffer = MakeImage(SW*4,SH*4)
-'scaleBuffer:
-'    For sb_i=SH To 0 Step -1
-'        CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
-'        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
-'		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
-'        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
-'    Next sb_i
-'    For sb_i=SW To 0 Step -1
-'        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,Image(gBuffer),Image(gBuffer)
-'        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
-'        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
-'        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
-
-'    Next sb_i
-'Return
-'end includes
-
-Type particle
-    Field t
-    Field x
-    Field y
-    Field xv As Float
-    Field yv As Float
-    Field f
-EndType
-
-
 SetWindow "Mets-palopeli ALPHA v0.0.0 PREVIEW TECH DEMO"
 
 menuBg = LoadImage("gfx/menu.png")
@@ -47,22 +16,6 @@ credits(2) = "Gfx + Sfx...: Wing"
 credits(3) = "Code + Party: Tuhis"
 credits(4) = "@ Tuhislanit  <3"
 
-
-Dim pImgs(2,32)
-
-pImg = LoadImage("gfx/tuli_partikkeli.png")
-For i=0 To 32
-	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(0,i)=j
-Next i
-pImg = LoadImage("gfx/savu_partikkeli.png")
-For i=0 To 32
-	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(1,i)=j
-Next i
-
 menuX = 60
 menuW = 80
 menuH = 18
@@ -73,7 +26,7 @@ menu:
     DrawToImage gBuffer
     Cls
     DrawImage menuBg, 0, 0
-    DrawImage flames(1,Rand(3)),128,-3
+    DrawImage flames(1,Rand(3)),127,-3
     
     Color cbred
     Line 143,22, 162,28
@@ -99,13 +52,7 @@ menu:
                 End
         EndSelect
     EndIf
-    
-    For p.particle = Each particle
-        DrawImage pImgs(p\t, p\f), p\x, p\y
-        p\x + p\xv
-        p\y + p\yv
-        p\yv + 0.01
-    Next p
+
     
 Return
 
