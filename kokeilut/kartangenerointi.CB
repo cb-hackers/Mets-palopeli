@@ -1,10 +1,6 @@
 Global MAP_WIDTH
 Global MAP_HEIGHT
 
-Const FS_NO_FIRE = 0
-Const FS_BURNING = 1
-Const FS_SMOULDERING = 2
-
 Const TILE_EMPTY = 0
 Const TILE_GRASS = 1
 Const TILE_TREE1 = 2
@@ -12,20 +8,77 @@ Const TILE_TREE2 = 3
 Const TILE_TREE3 = 4
 Const TILE_ROAD = 5
 Const TILE_WATER = 6
+Const TILE_BURNED = 7
 
 
+Const HEAT_TRANS = 0.06
+Const MAX_HEAT = 1000
+Const MIN_HEAT = 0.1
+Const HEAT_DISPENCE = 0.75
+Const RANDOM_HEAT_CHANCE = 0.01
+Const BURN_TIME_START = 0.001
+
+Const WIND_SPEED_X = 1.0
+Const WIND_SPEED_Y = 2.0
+
+Const WIND_EFFECT_MULT = 0.3
+
+Dim tileBurnTimes#(7)
+Dim tileHeatValues#(7)
+Dim tileFlamingHeatValue#(7)
+Dim tileFlamingChance#(7)
+tileBurnTimes(TILE_EMPTY) = 0
+tileBurnTimes(TILE_ROAD) = 0
+tileBurnTimes(TILE_WATER) = 0
+tileBurnTimes(TILE_GRASS) = 5
+tileBurnTimes(TILE_TREE1) = 10
+tileBurnTimes(TILE_TREE2) = 15
+tileBurnTimes(TILE_TREE3) = 20
+tileBurnTimes(TILE_BURNED) = 0
+
+tileHeatValues(TILE_EMPTY) = 0
+tileHeatValues(TILE_ROAD) = 0
+tileHeatValues(TILE_WATER) = 0.0
+tileHeatValues(TILE_GRASS) = 70
+tileHeatValues(TILE_TREE1) = 100
+tileHeatValues(TILE_TREE2) = 140
+tileHeatValues(TILE_TREE3) = 240
+tileHeatValues(TILE_BURNED) = 0
+
+tileFlamingHeatValue(TILE_EMPTY) = 0
+tileFlamingHeatValue(TILE_ROAD) = 0
+tileFlamingHeatValue(TILE_WATER) = 0
+tileFlamingHeatValue(TILE_GRASS) = 4
+tileFlamingHeatValue(TILE_TREE1) = 70
+tileFlamingHeatValue(TILE_TREE2) = 75
+tileFlamingHeatValue(TILE_TREE3) = 80
+tileFlamingHeatValue(TILE_BURNED) = 0
+
+tileFlamingChance(TILE_EMPTY) = 0
+tileFlamingChance(TILE_ROAD) = 0
+tileFlamingChance(TILE_WATER) = 0
+tileFlamingChance(TILE_GRASS) = 0.1
+tileFlamingChance(TILE_TREE1) = 0.03
+tileFlamingChance(TILE_TREE2) = 0.025
+tileFlamingChance(TILE_TREE3) = 0.02
+tileFlamingChance(TILE_BURNED) = 0
 
 
-Dim mapFireState(1, 1)
+Dim burnTimes#(1, 1)
+Dim heat#(1, 1)
+
 Dim mapTiles(1, 1)
 Dim treeGrow(1, 1)
+
 Function GenerateMap(imagePath$)
 	img = LoadImage(imagePath$)
 	MAP_WIDTH = ImageWidth(img)
 	MAP_HEIGHT = ImageHeight(img)
-	ReDim mapFireState(MAP_WIDTH-1, MAP_HEIGHT-1)
+	ReDim burnTimes(MAP_WIDTH-1, MAP_HEIGHT-1)
 	ReDim mapTiles(MAP_WIDTH-1, MAP_HEIGHT-1)
 	ReDim treeGrow(MAP_WIDTH-1, MAP_HEIGHT-1)	
+	ReDim heat(MAP_WIDTH-1, MAP_HEIGHT-1)	
+	ReDim burnTimes(MAP_WIDTH-1, MAP_HEIGHT-1)	
 	
 	waterPixel = 255
 	roadPixel = 0
@@ -43,7 +96,7 @@ Function GenerateMap(imagePath$)
 			ElseIf pixel = roadPixel Then
 				mapTiles(x,y) = TILE_ROAD
 			ElseIf pixel = firePixel Then
-				mapFireState(x,y) = FS_BURNING
+				burnTimes(x,y) = BURN_TIME_START
 			ElseIf pixel = treePixel Then
 				mapTiles(x,y) = TILE_GRASS + Int((Rnd(0, 1) ^ 4) * 6) / 2
 			EndIf
@@ -61,7 +114,7 @@ Function DrawMap()
 	For x = 0 To MAP_WIDTH - 1
 		For y = 0 To MAP_HEIGHT - 1
 			pixel = -1
-			If mapFireState(x,y) = FS_BURNING Then
+			If burnTimes(x,y) > 0 Then
 				pixel = 255 Shl 16
 			Else
 				Select mapTiles(x,y)
@@ -77,6 +130,8 @@ Function DrawMap()
 						pixel = 50 Shl 8
 					Case 1
 						pixel = 255 Shl 8 + 255 Shl 16
+					Case 7
+						pixel = 100 Shl 8 + 100 Shl 16  + 100
 				EndSelect
 			EndIf
 			
@@ -86,6 +141,65 @@ Function DrawMap()
 	Unlock SCREEN()
 EndFunction
 
+Function UpdateFireSpreading(t#)
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			If burnTimes(x,y) > 0 Then
+				burnTimes(x,y) = burnTimes(x,y) + t# * (0.7 + (heat(x,y) / MAX_HEAT)*0.3) 
+				If burnTimes(x,y) > tileBurnTimes(mapTiles(x,y)) Then
+					mapTiles(x,y) = TILE_BURNED
+					burnTimes(x,y) = 0
+				EndIf
+				heat(x,y) = heat(x,y) + tileHeatValues(mapTiles(x,y)) * t#
+				If Rnd(t#) < RANDOM_HEAT_CHANCE Then
+					If WIND_SPEED_X > 0 Then
+						xx = x + Rnd(-1,1) + Rnd(WIND_SPEED_X)
+					Else
+						xx = x + Rnd(-1,1) + Rnd(WIND_SPEED_X,0)
+					EndIf
+					If WIND_SPEED_Y > 0 Then
+						yy = y + Rnd(-1,1) + Rnd(WIND_SPEED_Y)
+					Else
+						yy = y + Rnd(-1,1) + Rnd(WIND_SPEED_Y,0)
+					EndIf
+					If xx >= 0 And xx < MAP_WIDTH And yy >= 0 And yy < MAP_HEIGHT Then
+						If Rnd(1) < tileFlamingChance(mapTiles(xx,yy)) Then
+							burnTimes(xx,yy) = BURN_TIME_START
+							heat(xx,yy) = heat(xx,yy) + 10
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		Next y
+	Next x
+	maxDist# = Sqrt(8)
+	wmx# = WIND_SPEED_X * WIND_EFFECT_MULT
+	wmy# = WIND_SPEED_Y * WIND_EFFECT_MULT
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			For xx = Max(0, x - 2) To Min(MAP_WIDTH - 1, x + 2)
+				For yy = Max(0, y - 2) To Min(MAP_HEIGHT - 1, y + 2)
+					If x <> xx And y <> yy Then
+						distMult# = 1.35 - Distance(x+ wmx#, y + wmy#, xx, yy) / maxDist#
+						mult# = distMult + (WIND_SPEED_X - (xx-x)) * distMult 
+						heat(xx, yy) = heat(xx, yy) + heat(x,y) * HEAT_TRANS * t# * distMult
+					EndIf
+				Next yy
+			Next xx
+			
+			If burnTimes(x,y) = 0 And heat(x,y) > tileFlamingHeatValue(mapTiles(x,y)) And tileFlamingHeatValue(mapTiles(x,y)) > 0 Then
+				burnTimes(x,y) = BURN_TIME_START
+			EndIf
+			heat(x,y) = heat(x,y) - heat(x,y) * HEAT_DISPENCE * t#
+		Next y
+	Next x
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			heat(x,y) = Min(heat(x,y), MAX_HEAT)
+		Next y
+	Next x
+	
+EndFunction
 
 Function GrowTrees()
 	For x = 0 To MAP_WIDTH - 1
@@ -121,6 +235,7 @@ Function GrowTrees()
 					mapTiles(x,y) = mapTiles(x,y) + 1
 					treeGrow(x,y) = 0
 				EndIf
+
 			EndIf
 			//If mapTiles(x,y) >= TILE_TREE1 And mapTiles(x,y) <= TILE_TREE3 And Rand(120) = 0 Then
 			//	mapTiles(x,y) = mapTiles(x,y) - 1
@@ -128,24 +243,54 @@ Function GrowTrees()
 			//EndIf
 		Next y
 	Next x
-EndFunction 
+EndFunction
 
 
-SCREEN 400, 400, 0, 1
-SCREEN 100, 100, 0, 2
+Function DrawHeatmap()
+	Lock SCREEN()
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			pixel = Int((heat(x,y) / MAX_HEAT) * 255.0) Shl 16
+			PutPixel2 100 + x,y,pixel, SCREEN()
+		Next y
+	Next x
+	Unlock SCREEN()
+EndFunction
+
+
+SCREEN 800, 400, 0, 1
+SCREEN 200, 100, 0, 2
 
 GenerateMap("testi.bmp")
 i = 0
 Color cbRed
+lastUpdate = Timer()
+For i = 1 To 100
+	GrowTrees()
+Next i
 Repeat
 	DrawMap()
+	DrawHeatmap()
 	If KeyDown(28) Then
 		GrowTrees()
 		i + 1
-		SetWindow "Iterations: " + i
+		
 	EndIf
+	t# = (Timer() - lastUpdate) / 1000.0
+	lastUpdate = Timer()
+	If KeyDown(cbKeySpace) Then
+		UpdateFireSpreading(t#)
+	EndIf
+	If MouseX() >= 100 Then
+		SetWindow "Heat("+(MouseX()-100)+", "+MouseY()+"): " + heat(MouseX()-100, MouseY())
+	Else
+		SetWindow "Heat("+MouseX()+", "+MouseY()+"): " + heat(MouseX(), MouseY())
+	EndIf
+	
 	DrawScreen
 Forever
+
+
 
 
 Function GrowTrees_OldAlgo()
