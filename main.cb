@@ -1,0 +1,19 @@
+'This is your first CoolBasic program!
+
+Include "map.cb"
+Include	"renderer.cb"
+Include "firespreading.cb"
+GenerateMap("kokeilut/testi.png")
+
+Repeat
+GrowTrees()
+cx=cx+(LeftKey()-RightKey())*4
+cy=cy-(DownKey()-UpKey())*4
+For tx=0 To MAP_WIDTH-1
+	For ty=0 To MAP_HEIGHT-1
+		id=	mapTiles(tx,ty)
+		Gosub drawTile
+	Next ty
+Next tx
+DrawScreen
+Forever

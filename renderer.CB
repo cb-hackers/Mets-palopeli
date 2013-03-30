@@ -4,7 +4,6 @@ Const SW=200
 Const SH=150
 SCREEN SW*4,SH*4
 
-Include "map.CB"
 
 Dim Tiles(TILE_COUNT,4)
 loadtiles()
@@ -12,19 +11,6 @@ loadtiles()
 
 cx = 200
 cy = 50
-Repeat
-cx=cx+(LeftKey()-RightKey())*4
-cy=cy-(DownKey()-UpKey())*4
-Randomize 123634
-For tx=0 To 100
-	For ty=0 To 100
-		id=Rand(7)
-		
-		Gosub drawTile
-	Next ty
-Next tx
-DrawScreen
-Forever
 
 drawTile:
 	Gosub kamera
