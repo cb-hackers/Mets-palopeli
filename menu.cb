@@ -73,7 +73,7 @@ menu:
     DrawToImage gBuffer
     Cls
     DrawImage menuBg, 0, 0
-    DrawImage flames(1,Rand(3)),128,-3
+    DrawImage flames(1,Rand(3)),127,-3
     
     Color cbred
     Line 143,22, 162,28
