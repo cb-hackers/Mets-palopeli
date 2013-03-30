@@ -17,6 +17,9 @@ Repeat
 	DrawScreen
 Forever
 
+copterx#=0
+coptery#=0
+
 
 main:
     GenerateMap("kokeilut/testi.png", 0)
@@ -36,12 +39,15 @@ main:
             part + 1
         EndIf
 
+		Gosub updatecopter
+
 		doublePx = Not KeyDown(cbkeyZ)
         cx=cx+(LeftKey()-RightKey())*4
         cy=cy-(DownKey()-UpKey())*4
 
 		xlimit=-cx/16-cy/8
 		ylimit=cx/16-cy/8
+		
 	
 		If Not doublePx Then 
 			cx = cx + SW*1.5 : cy = cy + SH*1.5
@@ -55,14 +61,17 @@ main:
 			DrawImage gui,300,250
 		Else	
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
+			
 				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
+				
 			Next tx
 			DrawImage gui,0,0
 		EndIf
-		
+		Gosub drawcopter
+
 
         DrawToScreen
         If doublePx Then Gosub scalebuffer
@@ -70,6 +79,15 @@ main:
         
         DrawScreen
     Forever
+Return
+
+updatecopter:
+	sx=MouseX()/4.0
+	sy=MouseY()/4.0
+	Gosub inversekamera
+	follow#=0.05
+	copterx=copterx*(1-follow)+tx*follow
+	coptery=coptery*(1-follow)+ty*follow
 Return
 
 scaleBuffer:
