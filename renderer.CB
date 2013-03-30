@@ -10,15 +10,16 @@ Dim Tiles(TILE_COUNT,4)
 loadtiles()
 
 
-'id=TILE_GRASS:
-tx=0:ty=0:Gosub drawTile
 cx = 200
 cy = 50
 Repeat
 cx=cx+(LeftKey()-RightKey())*4
 cy=cy-(DownKey()-UpKey())*4
+Randomize 123634
 For tx=0 To 100
 	For ty=0 To 100
+		id=Rand(7)
+		
 		Gosub drawTile
 	Next ty
 Next tx
@@ -40,8 +41,20 @@ Return
 
 
 Function loadtiles()
+	//Ground
 	img=LoadImage("gfx/perusmaa.png")
-	Tiles(0,0)=maketile(img,0)
+	Tiles(TILE_EMPTY,0)=maketile(img,0)
+	Tiles(TILE_GRASS,0)=maketile(img,1)
+	Tiles(TILE_HAY,0)=maketile(img,2)
+	Tiles(TILE_ROAD,0)=maketile(img,3)
+	Tiles(TILE_WATER,0)=maketile(img,4)
+	//Trees
+	img=LoadImage("gfx/puu_isokuusi.png")
+	Tiles(TILE_TREE1,0)=maketile(img,0)	
+	img=LoadImage("gfx/puu_isokuusi2.png")
+	Tiles(TILE_TREE2,0)=maketile(img,0)
+	img=LoadImage("gfx/puu_isokuusi3.png")
+	Tiles(TILE_TREE3,0)=maketile(img,0)
 	
 EndFunction
 
