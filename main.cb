@@ -37,9 +37,10 @@ main:
         doublePx = Not KeyDown(cbkeyZ)
         cx=cx+(LeftKey()-RightKey())*16 / (1 + doublePx * 3)
         cy=cy-(DownKey()-UpKey())*16 / (1 + doublePx * 3)
-        For tx=0 To MAP_WIDTH-1
+
         If doublePx Then cx = cx - SW*1.5 : cy = cy - SH*1.5
-        For tx=0 To MAP_WIDTH-1            For ty=0 To MAP_HEIGHT-1
+        For tx=0 To MAP_WIDTH-1
+			For ty=0 To MAP_HEIGHT-1
                 id=	mapTiles(tx,ty)
                 burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
                 Gosub drawTile

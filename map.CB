@@ -15,11 +15,11 @@ Const TILE_BURNED_GRASS = 9
 Const TILE_COUNT = 9
 
 
-Const HEAT_TRANS = 0.05
+Const HEAT_TRANS = 0.055
 Const MAX_HEAT = 1000
 Const MIN_HEAT = 0.1
 Const HEAT_DISPENCE = 0.6
-Const RANDOM_HEAT_CHANCE = 0.01
+Const RANDOM_HEAT_CHANCE = 0.02
 Const BURN_TIME_START = 0.001
 
 Global WIND_SPEED_X
@@ -49,28 +49,28 @@ tileHeatValues(TILE_ROAD) = 0
 tileHeatValues(TILE_WATER) = 0.0
 tileHeatValues(TILE_GRASS) = 120
 tileHeatValues(TILE_HAY) = 50
-tileHeatValues(TILE_TREE1) = 220
-tileHeatValues(TILE_TREE2) = 280
-tileHeatValues(TILE_TREE3) = 340
+tileHeatValues(TILE_TREE1) = 150
+tileHeatValues(TILE_TREE2) = 200
+tileHeatValues(TILE_TREE3) = 250
 tileHeatValues(TILE_BURNED_TREE) = 0
 tileHeatValues(TILE_BURNED_GRASS) = 0
 
 tileFlamingHeatValue(TILE_EMPTY) = 0
 tileFlamingHeatValue(TILE_ROAD) = 0
 tileFlamingHeatValue(TILE_WATER) = 0
-tileFlamingHeatValue(TILE_GRASS) = 50
-tileFlamingHeatValue(TILE_HAY) = 30
-tileFlamingHeatValue(TILE_TREE1) = 180
-tileFlamingHeatValue(TILE_TREE2) = 235
-tileFlamingHeatValue(TILE_TREE3) = 260
+tileFlamingHeatValue(TILE_GRASS) = 40
+tileFlamingHeatValue(TILE_HAY) = 25
+tileFlamingHeatValue(TILE_TREE1) = 100
+tileFlamingHeatValue(TILE_TREE2) = 135
+tileFlamingHeatValue(TILE_TREE3) = 160
 tileFlamingHeatValue(TILE_BURNED_TREE) = 0
 tileFlamingHeatValue(TILE_BURNED_GRASS) = 0
 
 tileFlamingChance(TILE_EMPTY) = 0
 tileFlamingChance(TILE_ROAD) = 0
 tileFlamingChance(TILE_WATER) = 0
-tileFlamingChance(TILE_GRASS) = 0.1
-tileFlamingChance(TILE_HAY) = 0.07
+tileFlamingChance(TILE_GRASS) = 0.7
+tileFlamingChance(TILE_HAY) = 0.1
 tileFlamingChance(TILE_TREE1) = 0.03
 tileFlamingChance(TILE_TREE2) = 0.025
 tileFlamingChance(TILE_TREE3) = 0.02
