@@ -17,7 +17,9 @@ cy = 50
 drawTile:
 	Gosub kamera
 	If Tiles(id,burning) Then DrawImage Tiles(id,burning),sx,sy-ImageHeight(Tiles(id,burning))
-	If heat(tx,ty)>10 Then DrawImage flames(0,Rand(3)),sx,sy-ImageHeight(flames(0,0))
+	
+	If Sqrt(heat(tx,ty))>13 Then DrawImage flames(1,Rand(3)),sx,sy-ImageHeight(flames(1,0))
+	If Rand(Sqrt(heat(tx,ty)))>7 Then DrawImage flames(0,Rand(3)),sx,sy-ImageHeight(flames(0,0))
 	Dot sx,sy
 	'
 Return
