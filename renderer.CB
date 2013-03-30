@@ -14,7 +14,7 @@ cy = 50
 
 drawTile:
 	Gosub kamera
-	If Tiles(id,heat) Then DrawImage Tiles(id,heat),sx,sy-ImageHeight(Tiles(id,0))
+	If Tiles(id,temperature) Then DrawImage Tiles(id,temperature),sx,sy-ImageHeight(Tiles(id,temperature))
 	Dot sx,sy
 	'
 Return
@@ -29,20 +29,32 @@ Return
 Function loadtiles()
 	//Ground
 	img=LoadImage("gfx/perusmaa.png")
+	smoldering=maketile(img,6)
 	Tiles(TILE_EMPTY,0)=maketile(img,0)
+	Tiles(TILE_EMPTY,1)=smoldering
 	Tiles(TILE_GRASS,0)=maketile(img,1)
+	Tiles(TILE_GRASS,1)=smoldering
 	Tiles(TILE_HAY,0)=maketile(img,2)
-	Tiles(TILE_ROAD,0)=maketile(img,3)
-	Tiles(TILE_WATER,0)=maketile(img,4)
+	Tiles(TILE_HAY,1)=smoldering
 	Tiles(TILE_BURNED_GRASS,0)=maketile(img,5)
+	Tiles(TILE_BURNED_GRASS,1)=smoldering
+	
+	Tiles(TILE_ROAD,0)=maketile(img,3)
+	Tiles(TILE_ROAD,1)=maketile(img,3)
+	Tiles(TILE_WATER,0)=maketile(img,4)
+	Tiles(TILE_WATER,1)=maketile(img,4)
 	//Trees
 	img=LoadImage("gfx/puu_isokuusi.png")
 	Tiles(TILE_TREE1,0)=maketile(img,0)	
+	Tiles(TILE_TREE1,1)=maketile(img,1)	
 	Tiles(TILE_BURNED_TREE,0)=maketile(img,3)	
+	Tiles(TILE_BURNED_TREE,1)=maketile(img,4)
 	img=LoadImage("gfx/puu_isokuusi2.png")
 	Tiles(TILE_TREE2,0)=maketile(img,0)
+	Tiles(TILE_TREE2,1)=maketile(img,1)	
 	img=LoadImage("gfx/puu_isokuusi3.png")
 	Tiles(TILE_TREE3,0)=maketile(img,0)
+	Tiles(TILE_TREE3,1)=maketile(img,1)	
 	
 EndFunction
 

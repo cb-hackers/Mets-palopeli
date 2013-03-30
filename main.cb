@@ -20,6 +20,7 @@ Repeat
 	For tx=0 To MAP_WIDTH-1
 		For ty=0 To MAP_HEIGHT-1
 			id=	mapTiles(tx,ty)
+			temperature=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
 			Gosub drawTile
 		Next ty
 	Next tx
