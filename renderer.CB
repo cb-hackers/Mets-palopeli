@@ -1,0 +1,53 @@
+Const TW=16
+Const TH=8
+Const SW=200
+Const SH=150
+SCREEN SW*4,SH*4
+
+
+Dim Tiles(TILE_COUNT,4)
+loadtiles()
+
+
+cx = 200
+cy = 50
+
+drawTile:
+	Gosub kamera
+	DrawImage Tiles(id,0),sx,sy-ImageHeight(Tiles(id,0))
+	Dot sx,sy
+	'
+Return
+
+kamera:
+	sx=(tx-ty)/2.0*TW	+cx
+	sy=(tx+ty)/2.0*TH	+cy
+Return
+
+
+
+Function loadtiles()
+	//Ground
+	img=LoadImage("gfx/perusmaa.png")
+	Tiles(TILE_EMPTY,0)=maketile(img,0)
+	Tiles(TILE_GRASS,0)=maketile(img,1)
+	Tiles(TILE_HAY,0)=maketile(img,2)
+	Tiles(TILE_ROAD,0)=maketile(img,3)
+	Tiles(TILE_WATER,0)=maketile(img,4)
+	//Trees
+	img=LoadImage("gfx/puu_isokuusi.png")
+	Tiles(TILE_TREE1,0)=maketile(img,0)	
+	img=LoadImage("gfx/puu_isokuusi2.png")
+	Tiles(TILE_TREE2,0)=maketile(img,0)
+	img=LoadImage("gfx/puu_isokuusi3.png")
+	Tiles(TILE_TREE3,0)=maketile(img,0)
+	
+EndFunction
+
+Function maketile(img,frame)
+	h=ImageHeight(img)
+	i=MakeImage(16,h)
+	CopyBox frame*16,0,16,h,0,0,Image(img),Image(i)
+	Return i
+EndFunction
+
