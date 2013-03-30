@@ -3,15 +3,16 @@ Global MAP_HEIGHT
 
 Const TILE_EMPTY = 0
 Const TILE_GRASS = 1
-Const TILE_TREE1 = 2
-Const TILE_TREE2 = 3
-Const TILE_TREE3 = 4
-Const TILE_ROAD = 5
-Const TILE_WATER = 6
-Const TILE_BURNED_TREE = 7
-Const TILE_BURNED_GRASS = 8
+Const TILE_HAY = 2
+Const TILE_TREE1 = 3
+Const TILE_TREE2 = 4
+Const TILE_TREE3 = 5
+Const TILE_ROAD = 6
+Const TILE_WATER = 7
+Const TILE_BURNED_TREE = 8
+Const TILE_BURNED_GRASS = 9
 
-Const TILE_COUNT = 8
+Const TILE_COUNT = 9
 
 
 Const HEAT_TRANS = 0.06
@@ -36,6 +37,7 @@ tileBurnTimes(TILE_EMPTY) = 0
 tileBurnTimes(TILE_ROAD) = 0
 tileBurnTimes(TILE_WATER) = 0
 tileBurnTimes(TILE_GRASS) = 5
+tileBurnTimes(TILE_HAY) = 6
 tileBurnTimes(TILE_TREE1) = 10
 tileBurnTimes(TILE_TREE2) = 15
 tileBurnTimes(TILE_TREE3) = 20
@@ -46,6 +48,7 @@ tileHeatValues(TILE_EMPTY) = 0
 tileHeatValues(TILE_ROAD) = 0
 tileHeatValues(TILE_WATER) = 0.0
 tileHeatValues(TILE_GRASS) = 70
+tileHeatValues(TILE_HAY) = 50
 tileHeatValues(TILE_TREE1) = 100
 tileHeatValues(TILE_TREE2) = 140
 tileHeatValues(TILE_TREE3) = 240
@@ -56,6 +59,7 @@ tileFlamingHeatValue(TILE_EMPTY) = 0
 tileFlamingHeatValue(TILE_ROAD) = 0
 tileFlamingHeatValue(TILE_WATER) = 0
 tileFlamingHeatValue(TILE_GRASS) = 4
+tileFlamingHeatValue(TILE_HAY) = 10
 tileFlamingHeatValue(TILE_TREE1) = 70
 tileFlamingHeatValue(TILE_TREE2) = 75
 tileFlamingHeatValue(TILE_TREE3) = 80
@@ -66,6 +70,7 @@ tileFlamingChance(TILE_EMPTY) = 0
 tileFlamingChance(TILE_ROAD) = 0
 tileFlamingChance(TILE_WATER) = 0
 tileFlamingChance(TILE_GRASS) = 0.1
+tileFlamingChance(TILE_HAY) = 0.07
 tileFlamingChance(TILE_TREE1) = 0.03
 tileFlamingChance(TILE_TREE2) = 0.025
 tileFlamingChance(TILE_TREE3) = 0.02
@@ -106,7 +111,7 @@ Function GenerateMap(imagePath$, iterations = 120)
 			ElseIf pixel = firePixel Then
 				burnTimes(x,y) = BURN_TIME_START
 			ElseIf pixel = treePixel Then
-				mapTiles(x,y) = TILE_GRASS + Int((Rnd(0, 1) ^ 4) * 6) / 2
+				mapTiles(x,y) = TILE_GRASS + Int((Rnd(0, 1) ^ 4) * 8) / 2
 			EndIf
 		Next y
 	Next x
@@ -145,6 +150,9 @@ Function GrowTrees()
 					mapTiles(x,y) = TILE_GRASS
 					treeGrow(x,y) = 0
 				ElseIf mapTiles(x,y) = TILE_GRASS And treeGrow(x,y) > 70
+					mapTiles(x,y) = mapTiles(x,y) + 1
+					treeGrow(x,y) = 0
+				ElseIf mapTiles(x,y) = TILE_HAY And treeGrow(x,y) > 70
 					mapTiles(x,y) = mapTiles(x,y) + 1
 					treeGrow(x,y) = 0
 				ElseIf mapTiles(x,y) = TILE_TREE1 And treeGrow(x,y) > 85

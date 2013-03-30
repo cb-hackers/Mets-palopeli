@@ -1,5 +1,4 @@
 Function UpdateFireSpreading(t#)
-	t# = 0.1 * t#
 	For x = 0 To MAP_WIDTH - 1
 		For y = 0 To MAP_HEIGHT - 1
 			If burnTimes(x,y) > 0 Then

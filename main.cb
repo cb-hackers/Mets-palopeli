@@ -11,6 +11,7 @@ Repeat
 		GrowTrees()
 	EndIf
 	t# = (Timer() - lastUpdate) / 1000.0
+	lastUpdate = Timer()
 	If KeyDown(cbKeySpace) Then
 		UpdateFireSpreading(t#)
 	EndIf
