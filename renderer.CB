@@ -30,6 +30,12 @@ kamera:
 	sy=(tx+ty)/2.0*TH	+cy
 Return
 
+inversekamera:
+	tx = (sx*TH+sy*TW-cx*TH-cy*TW)/(TW*TH)
+	ty = (-sx*TH+sy*TW+cx*TH-cy*TW)/(TW*TH)
+
+Return
+
 Function loadflames()
 	img=LoadImage("gfx/tuli.png")
 	For i=0 To 3

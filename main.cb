@@ -6,6 +6,7 @@ Include "firespreading.cb"
 GenerateMap("kokeilut/testi.png", 0)
 
 gBuffer = MakeImage(SW*4,SH*4)
+gui=LoadImage("gfx/gui.png")
 
 lastUpdate = Timer()
 part = 0
@@ -24,13 +25,19 @@ Repeat
 	EndIf
 	cx=cx+(LeftKey()-RightKey())*4
 	cy=cy-(DownKey()-UpKey())*4
-	For tx=0 To MAP_WIDTH-1
-		For ty=0 To MAP_HEIGHT-1
+	'sx=200
+	'sy=150
+	'Gosub inversekamera
+	xlimit=-cx/16-cy/8
+	ylimit=+cx/16-cy/8
+	For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
+		For ty=Max(0,ylimit-10) To Min(ylimit+20 ,MAP_HEIGHT-1)
 			id=	mapTiles(tx,ty)
 			burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
 			Gosub drawTile
 		Next ty
 	Next tx
+	DrawImage gui,0,0
 	DrawToScreen
 	if Not KeyDown(cbkeyz) Then Gosub scalebuffer
 	DrawImage gbuffer,0,0
@@ -50,7 +57,7 @@ scaleBuffer:
         CopyBox sb_i,0,1,SW*4	,sb_i*4,0,image(gBuffer),image(gBuffer)
         CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,image(gBuffer),image(gBuffer)
         CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,image(gBuffer),image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,image(gBuffer),image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),image(gBuffer)
 
     next sb_i
 Return
