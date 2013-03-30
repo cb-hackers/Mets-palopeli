@@ -22,8 +22,13 @@ Repeat
 		UpdateFireSpreading(t#, part)
 		part + 1
 	EndIf
-	cx=cx+(LeftKey()-RightKey())*4
-	cy=cy-(DownKey()-UpKey())*4
+
+	doublePx = Not KeyDown(cbkeyZ)
+	
+	cx=cx+(LeftKey()-RightKey())*16 / (1 + doublePx * 3)
+	cy=cy-(DownKey()-UpKey())*16 / (1 + doublePx * 3)
+	
+	If doublePx Then cx = cx - SW*1.5 : cy = cy - SH*1.5
 	For tx=0 To MAP_WIDTH-1
 		For ty=0 To MAP_HEIGHT-1
 			id=	mapTiles(tx,ty)
@@ -31,8 +36,9 @@ Repeat
 			Gosub drawTile
 		Next ty
 	Next tx
+	If doublePx Then cx = cx + SW*1.5 : cy = cy + SH*1.5
 	DrawToScreen
-	if Not KeyDown(cbkeyz) Then Gosub scalebuffer
+	If doublePx Then Gosub scalebuffer
 	DrawImage gbuffer,0,0
 	
 	DrawScreen
