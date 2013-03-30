@@ -1,0 +1,163 @@
+Global MAP_WIDTH
+Global MAP_HEIGHT
+
+Const TILE_EMPTY = 0
+Const TILE_GRASS = 1
+Const TILE_TREE1 = 2
+Const TILE_TREE2 = 3
+Const TILE_TREE3 = 4
+Const TILE_ROAD = 5
+Const TILE_WATER = 6
+Const TILE_BURNED_TREE = 7
+Const TILE_BURNED_GRASS = 8
+
+Const TILE_COUNT = 8
+
+
+Const HEAT_TRANS = 0.06
+Const MAX_HEAT = 1000
+Const MIN_HEAT = 0.1
+Const HEAT_DISPENCE = 0.75
+Const RANDOM_HEAT_CHANCE = 0.01
+Const BURN_TIME_START = 0.001
+
+Global WIND_SPEED_X
+Global WIND_SPEED_Y
+WIND_SPEED_X = 10.0
+WIND_SPEED_X = 20.0
+
+Const WIND_EFFECT_MULT = 0.03
+
+Dim tileBurnTimes#(TILE_COUNT)
+Dim tileHeatValues#(TILE_COUNT)
+Dim tileFlamingHeatValue#(TILE_COUNT)
+Dim tileFlamingChance#(TILE_COUNT)
+tileBurnTimes(TILE_EMPTY) = 0
+tileBurnTimes(TILE_ROAD) = 0
+tileBurnTimes(TILE_WATER) = 0
+tileBurnTimes(TILE_GRASS) = 5
+tileBurnTimes(TILE_TREE1) = 10
+tileBurnTimes(TILE_TREE2) = 15
+tileBurnTimes(TILE_TREE3) = 20
+tileBurnTimes(TILE_BURNED_TREE) = 0
+tileBurnTimes(TILE_BURNED_GRASS) = 0
+
+tileHeatValues(TILE_EMPTY) = 0
+tileHeatValues(TILE_ROAD) = 0
+tileHeatValues(TILE_WATER) = 0.0
+tileHeatValues(TILE_GRASS) = 70
+tileHeatValues(TILE_TREE1) = 100
+tileHeatValues(TILE_TREE2) = 140
+tileHeatValues(TILE_TREE3) = 240
+tileHeatValues(TILE_BURNED) = 0
+
+tileFlamingHeatValue(TILE_EMPTY) = 0
+tileFlamingHeatValue(TILE_ROAD) = 0
+tileFlamingHeatValue(TILE_WATER) = 0
+tileFlamingHeatValue(TILE_GRASS) = 4
+tileFlamingHeatValue(TILE_TREE1) = 70
+tileFlamingHeatValue(TILE_TREE2) = 75
+tileFlamingHeatValue(TILE_TREE3) = 80
+tileFlamingHeatValue(TILE_BURNED) = 0
+
+tileFlamingChance(TILE_EMPTY) = 0
+tileFlamingChance(TILE_ROAD) = 0
+tileFlamingChance(TILE_WATER) = 0
+tileFlamingChance(TILE_GRASS) = 0.1
+tileFlamingChance(TILE_TREE1) = 0.03
+tileFlamingChance(TILE_TREE2) = 0.025
+tileFlamingChance(TILE_TREE3) = 0.02
+tileFlamingChance(TILE_BURNED) = 0
+
+
+Dim burnTimes#(1, 1)
+Dim heat#(1, 1)
+
+Dim mapTiles(1, 1)
+Dim treeGrow(1, 1)
+
+Function GenerateMap(imagePath$, iterations = 120)
+	img = LoadImage(imagePath$)
+	MAP_WIDTH = ImageWidth(img)
+	MAP_HEIGHT = ImageHeight(img)
+	ReDim burnTimes(MAP_WIDTH-1, MAP_HEIGHT-1)
+	ReDim mapTiles(MAP_WIDTH-1, MAP_HEIGHT-1)
+	ReDim treeGrow(MAP_WIDTH-1, MAP_HEIGHT-1)	
+	ReDim heat(MAP_WIDTH-1, MAP_HEIGHT-1)	
+	ReDim burnTimes(MAP_WIDTH-1, MAP_HEIGHT-1)	
+	
+	waterPixel = 255
+	roadPixel = 0
+	firePixel = 255 Shl 16
+	treePixel = 255 Shl 8
+	
+	
+	Lock Image(img)
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			pixel = (GetPixel2(x,y,Image(img)) Shl 8) Shr 8
+			
+			If pixel = waterPixel Then
+				mapTiles(x,y) = TILE_WATER
+			ElseIf pixel = roadPixel Then
+				mapTiles(x,y) = TILE_ROAD
+			ElseIf pixel = firePixel Then
+				burnTimes(x,y) = BURN_TIME_START
+			ElseIf pixel = treePixel Then
+				mapTiles(x,y) = TILE_GRASS + Int((Rnd(0, 1) ^ 4) * 6) / 2
+			EndIf
+		Next y
+	Next x
+	Unlock Image(img)
+	DeleteImage img
+	
+	//Generoi puut
+	For i = 1 To iterations
+		GrowTrees()
+	Next i
+
+EndFunction
+
+Function GrowTrees()
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			If mapTiles(x,y) >= TILE_EMPTY And mapTiles(x,y) <= TILE_TREE3 And Rand(1) = 1 Then
+				For i = mapTiles(x,y)*2 To TILE_GRASS Step -1
+					f1# = (Rnd(0, 1)^6)
+					f2# = (Rnd(0, 1)^6)
+					f# = Sqrt(f1# ^2 + f2# ^2)
+					xx = x + Int(f1# * 10.0) * Rand(-1, 1)
+					yy = y + Int(f2# * 10.0) * Rand(-1, 1)
+					If xx >= 0 And xx < MAP_WIDTH And yy >= 0 And yy < MAP_HEIGHT Then
+						treeGrow(xx, yy) = treeGrow(xx, yy) + Int((Rnd(0, 1)^5) * (1.0-f#) * 10)
+					EndIf
+				Next i
+			EndIf
+		Next y
+	Next x
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			If mapTiles(x,y) < TILE_TREE3
+				f = Rand(treeGrow(x,y))
+				If mapTiles(x,y) = TILE_EMPTY And treeGrow(x,y) > 0 Then
+					mapTiles(x,y) = TILE_GRASS
+					treeGrow(x,y) = 0
+				ElseIf mapTiles(x,y) = TILE_GRASS And treeGrow(x,y) > 70
+					mapTiles(x,y) = mapTiles(x,y) + 1
+					treeGrow(x,y) = 0
+				ElseIf mapTiles(x,y) = TILE_TREE1 And treeGrow(x,y) > 85
+					mapTiles(x,y) = mapTiles(x,y) + 1
+					treeGrow(x,y) = 0
+				ElseIf mapTiles(x,y) = TILE_TREE2 And treeGrow(x,y) > 105
+					mapTiles(x,y) = mapTiles(x,y) + 1
+					treeGrow(x,y) = 0
+				EndIf
+
+			EndIf
+			//If mapTiles(x,y) >= TILE_TREE1 And mapTiles(x,y) <= TILE_TREE3 And Rand(120) = 0 Then
+			//	mapTiles(x,y) = mapTiles(x,y) - 1
+			//	treeGrow(x,y) = 0
+			//EndIf
+		Next y
+	Next x
+EndFunction
