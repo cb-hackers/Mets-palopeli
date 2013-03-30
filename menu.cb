@@ -37,6 +37,13 @@ smallFont = LoadFont("fixedsys")
 SetFont smallFont
 
 
+Dim credits(3) As String
+credit# = 0
+credits(0) = "Code........: Latexi95"
+credits(1) = "Code + Idea.: Atomim"
+credits(2) = "Gfx + Sfx...: Wing"
+credits(3) = "Code + Party: Tuhis"
+
 Dim pImgs(2,32)
 
 pImg = LoadImage("gfx/tuli_partikkeli.png")
@@ -96,6 +103,15 @@ menu:
         p\yv + 0.01
     Next p
     
+Return
+
+credits:
+    t2 = Timer()
+    Color cbwhite
+    Text 15 + 15*Cos(t2/8),600-28,"Credits:"
+    Text 30 - 30*Sin(t2/10),600-14,credits(RoundDown(credit))
+    credit + 0.07
+    If credit > 3 Then credit = 0
 Return
 
 'testloop

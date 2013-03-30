@@ -13,6 +13,7 @@ Repeat
 	Gosub scaleBuffer
     DrawToScreen
 	DrawImage gBuffer,0,0
+    Gosub credits
 	DrawScreen
 Forever
 
