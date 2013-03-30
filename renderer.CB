@@ -14,7 +14,7 @@ cy = 50
 
 drawTile:
 	Gosub kamera
-	DrawImage Tiles(id,0),sx,sy-ImageHeight(Tiles(id,0))
+	If Tiles(id,0) Then DrawImage Tiles(id,0),sx,sy-ImageHeight(Tiles(id,0))
 	Dot sx,sy
 	'
 Return

@@ -5,7 +5,12 @@ Function UpdateFireSpreading(t#)
 			If burnTimes(x,y) > 0 Then
 				burnTimes(x,y) = burnTimes(x,y) + t# * (0.7 + (heat(x,y) / MAX_HEAT)*0.3) 
 				If burnTimes(x,y) > tileBurnTimes(mapTiles(x,y)) Then
-					mapTiles(x,y) = TILE_BURNED
+					If mapTiles(x,y) >= TILE_GRASS And mapTiles(x,y) <= TILE_HAY Then
+						mapTiles(x,y) = TILE_BURNED_GRASS
+					Else
+						mapTiles(x,y) = TILE_BURNED_TREE
+					EndIf
+					
 					burnTimes(x,y) = 0
 				EndIf
 				heat(x,y) = heat(x,y) + tileHeatValues(mapTiles(x,y)) * t#

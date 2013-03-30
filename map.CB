@@ -3,16 +3,15 @@ Global MAP_HEIGHT
 
 Const TILE_EMPTY = 0
 Const TILE_GRASS = 1
-Const TILE_HAY = 2
-Const TILE_TREE1 = 3
-Const TILE_TREE2 = 4
-Const TILE_TREE3 = 5
-Const TILE_ROAD = 6
-Const TILE_WATER = 7
-Const TILE_BURNED_TREE = 8
-Const TILE_BURNED_GRASS = 9
+Const TILE_TREE1 = 2
+Const TILE_TREE2 = 3
+Const TILE_TREE3 = 4
+Const TILE_ROAD = 5
+Const TILE_WATER = 6
+Const TILE_BURNED_TREE = 7
+Const TILE_BURNED_GRASS = 8
 
-Const TILE_COUNT = 9
+Const TILE_COUNT = 8
 
 
 Const HEAT_TRANS = 0.06
@@ -50,7 +49,8 @@ tileHeatValues(TILE_GRASS) = 70
 tileHeatValues(TILE_TREE1) = 100
 tileHeatValues(TILE_TREE2) = 140
 tileHeatValues(TILE_TREE3) = 240
-tileHeatValues(TILE_BURNED) = 0
+tileHeatValues(TILE_BURNED_TREE) = 0
+tileHeatValues(TILE_BURNED_GRASS) = 0
 
 tileFlamingHeatValue(TILE_EMPTY) = 0
 tileFlamingHeatValue(TILE_ROAD) = 0
@@ -59,7 +59,8 @@ tileFlamingHeatValue(TILE_GRASS) = 4
 tileFlamingHeatValue(TILE_TREE1) = 70
 tileFlamingHeatValue(TILE_TREE2) = 75
 tileFlamingHeatValue(TILE_TREE3) = 80
-tileFlamingHeatValue(TILE_BURNED) = 0
+tileFlamingHeatValue(TILE_BURNED_TREE) = 0
+tileFlamingHeatValue(TILE_BURNED_GRASS) = 0
 
 tileFlamingChance(TILE_EMPTY) = 0
 tileFlamingChance(TILE_ROAD) = 0
@@ -68,8 +69,8 @@ tileFlamingChance(TILE_GRASS) = 0.1
 tileFlamingChance(TILE_TREE1) = 0.03
 tileFlamingChance(TILE_TREE2) = 0.025
 tileFlamingChance(TILE_TREE3) = 0.02
-tileFlamingChance(TILE_BURNED) = 0
-
+tileFlamingChance(TILE_BURNED_TREE) = 0
+tileFlamingChance(TILE_BURNED_GRASS) = 0
 
 Dim burnTimes#(1, 1)
 Dim heat#(1, 1)
