@@ -6,7 +6,7 @@ SCREEN SW*4,SH*4
 
 
 Dim Tiles(TILE_COUNT,4)
-Dim flames(1,4)
+Dim flames(2,4)
 loadtiles()
 loadflames()
 
@@ -18,7 +18,8 @@ drawTile:
 	Gosub kamera
 	If Tiles(id,burning) Then DrawImage Tiles(id,burning),sx,sy-ImageHeight(Tiles(id,burning))
 	istree=id<6 And id>2
-	If (Sqrt(heat(tx,ty))+istree*5)>20 Then DrawImage flames(1,Rand(3)),sx,sy-ImageHeight(flames(1,0))
+	If (Sqrt(heat(tx,ty))+istree*5)>22 Then DrawImage flames(1,Rand(3)),sx,sy-ImageHeight(flames(1,0))
+	If (Sqrt(heat(tx,ty))+(id=TILE_HAY)*10)>18 Then DrawImage flames(2,Rand(3)),sx,sy-ImageHeight(flames(2,0))
 	If Rand(Sqrt(heat(tx,ty)))>7 Then DrawImage flames(0,Rand(3)),sx,sy-ImageHeight(flames(0,0))
 	Dot sx,sy
 	'
@@ -34,6 +35,7 @@ Function loadflames()
 	For i=0 To 3
 		flames(0,i)= maketile(img,i)
 		flames(1,i)= maketile(img,i+4)
+		flames(2,i)= maketile(img,i+8)
 	Next i
 	
 EndFunction
@@ -47,7 +49,7 @@ Function loadtiles()
 	Tiles(TILE_GRASS,0)=maketile(img,1)
 	Tiles(TILE_GRASS,1)=smoldering
 	Tiles(TILE_HAY,0)=maketile(img,2)
-	Tiles(TILE_HAY,1)=smoldering
+	//Tiles(TILE_HAY,1)=smoldering
 	Tiles(TILE_BURNED_GRASS,0)=maketile(img,5)
 	Tiles(TILE_BURNED_GRASS,1)=smoldering
 	
@@ -61,6 +63,7 @@ Function loadtiles()
 	Tiles(TILE_TREE1,1)=maketile(img,1)	
 	Tiles(TILE_BURNED_TREE,0)=maketile(img,3)	
 	Tiles(TILE_BURNED_TREE,1)=maketile(img,4)
+	Tiles(TILE_HAY,1)=maketile(img,4)
 	img=LoadImage("gfx/puu_isokuusi2.png")
 	Tiles(TILE_TREE2,0)=maketile(img,0)
 	Tiles(TILE_TREE2,1)=maketile(img,1)	
