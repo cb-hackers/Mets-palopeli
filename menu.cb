@@ -1,22 +1,22 @@
-Include "map.cb" 'for vars
-Include "renderer.cb" ' for tiles
+'Include "map.cb" 
+'Include "renderer.cb"
 'Include "main.cb"
-gBuffer = MakeImage(SW*4,SH*4)
-scaleBuffer:
-    For sb_i=SH To 0 Step -1
-        CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
-        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
-		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
-        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
-    Next sb_i
-    For sb_i=SW To 0 Step -1
-        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,Image(gBuffer),Image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
+'gBuffer = MakeImage(SW*4,SH*4)
+'scaleBuffer:
+'    For sb_i=SH To 0 Step -1
+'        CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
+'        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
+'		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
+'        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
+'    Next sb_i
+'    For sb_i=SW To 0 Step -1
+'        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,Image(gBuffer),Image(gBuffer)
+'        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
+'        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
+'        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
 
-    Next sb_i
-Return
+'    Next sb_i
+'Return
 'end includes
 
 Type particle
@@ -83,7 +83,7 @@ menu:
     If MouseUp(1) Then
         Select hitNum
             Case 1
-                'play
+                Gosub main
             Case 2
                 End
         EndSelect
@@ -98,17 +98,12 @@ menu:
     
 Return
 
-Function fire(x, y)
-    
-EndFunction
-
 'testloop
-valikko:
-Repeat
-    Gosub menu
-	Gosub scaleBuffer
-    DrawToScreen
-	DrawImage gBuffer,0,0
-	DrawScreen
-Forever
+'Repeat
+'    Gosub menu
+'	Gosub scaleBuffer
+'    DrawToScreen
+'	DrawImage gBuffer,0,0
+'	DrawScreen
+'Forever
     

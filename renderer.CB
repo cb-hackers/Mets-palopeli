@@ -21,7 +21,7 @@ drawTile:
 	If (Sqrt(heat(tx,ty))+istree*5)>22 Then DrawImage flames(1,Rand(3)),sx,sy-ImageHeight(flames(1,0))
 	If (Sqrt(heat(tx,ty))+(id=TILE_HAY)*10)>18 Then DrawImage flames(2,Rand(3)),sx,sy-ImageHeight(flames(2,0))
 	If Rand(Sqrt(heat(tx,ty)))>7 Then DrawImage flames(0,Rand(3)),sx,sy-ImageHeight(flames(0,0))
-	Dot sx,sy
+	'Dot sx,sy
 	'
 Return
 
