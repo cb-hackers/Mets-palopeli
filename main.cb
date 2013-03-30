@@ -5,8 +5,11 @@ Include	"renderer.cb"
 Include "firespreading.cb"
 GenerateMap("kokeilut/testi.png", 0)
 
+gBuffer = MakeImage(SW*4,SH*4)
+
 lastUpdate = Timer()
 Repeat
+	DrawToImage gbuffer
 	If KeyDown(28) Then
 		GrowTrees()
 	EndIf
@@ -24,6 +27,26 @@ Repeat
 			Gosub drawTile
 		Next ty
 	Next tx
+	DrawToScreen
+	gosub scalebuffer
+	DrawImage gbuffer,0,0
 	
 	DrawScreen
 Forever
+
+
+scaleBuffer:
+    For sb_i=SH To 0 Step -1
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
+		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
+    next sb_i
+    for sb_i=SW To 0 step -1
+        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,image(gBuffer),image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,image(gBuffer),image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,image(gBuffer),image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,image(gBuffer),image(gBuffer)
+
+    next sb_i
+Return
