@@ -1,0 +1,50 @@
+Include "renderer.cb" ' for tiles
+'Include "main.cb"
+gBuffer = MakeImage(SW*4,SH*4)
+scaleBuffer:
+    For sb_i=SH To 0 Step -1
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
+		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
+        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
+    Next sb_i
+    For sb_i=SW To 0 Step -1
+        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,Image(gBuffer),Image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
+
+    Next sb_i
+Return
+'end includes
+
+
+SetWindow "Mets-palopeli ALPHA v0.0.0 PREVIEW TECH DEMO"
+
+menuBg = LoadImage("gfx/menu.png")
+
+menuX = 60
+menuW = 80
+menuH = 20
+menuPlayY = 38
+
+menu:
+    DrawToImage gBuffer
+    Cls
+    hitx = 0
+    If MouseX()/4 > menuX And MouseX()/4 < menuX+menuW Then hitx = 1
+    If hitx And MouseY()/4 > menuPlayY And MouseY()/4 < menuPlayY+menuH Then Text 0,0,"play"
+    
+    DrawImage menuBg, 0, 0
+Return
+
+'testloop
+valikko:
+Repeat
+    Gosub menu
+	Gosub scaleBuffer
+    DrawToScreen
+	DrawImage gBuffer,0,0
+	DrawScreen
+Forever
+    
