@@ -15,17 +15,17 @@ Const TILE_BURNED_GRASS = 9
 Const TILE_COUNT = 9
 
 
-Const HEAT_TRANS = 0.06
+Const HEAT_TRANS = 0.05
 Const MAX_HEAT = 1000
 Const MIN_HEAT = 0.1
 Const HEAT_DISPENCE = 0.75
-Const RANDOM_HEAT_CHANCE = 0.01
+Const RANDOM_HEAT_CHANCE = 0.001
 Const BURN_TIME_START = 0.001
 
 Global WIND_SPEED_X
 Global WIND_SPEED_Y
+WIND_SPEED_X = 5.0
 WIND_SPEED_X = 10.0
-WIND_SPEED_X = 20.0
 
 Const WIND_EFFECT_MULT = 0.03
 
@@ -36,21 +36,21 @@ Dim tileFlamingChance#(TILE_COUNT)
 tileBurnTimes(TILE_EMPTY) = 0
 tileBurnTimes(TILE_ROAD) = 0
 tileBurnTimes(TILE_WATER) = 0
-tileBurnTimes(TILE_GRASS) = 5
-tileBurnTimes(TILE_HAY) = 6
-tileBurnTimes(TILE_TREE1) = 10
-tileBurnTimes(TILE_TREE2) = 15
-tileBurnTimes(TILE_TREE3) = 20
+tileBurnTimes(TILE_GRASS) = 10
+tileBurnTimes(TILE_HAY) = 14
+tileBurnTimes(TILE_TREE1) = 20
+tileBurnTimes(TILE_TREE2) = 25
+tileBurnTimes(TILE_TREE3) = 30
 tileBurnTimes(TILE_BURNED_TREE) = 0
 tileBurnTimes(TILE_BURNED_GRASS) = 0
 
 tileHeatValues(TILE_EMPTY) = 0
 tileHeatValues(TILE_ROAD) = 0
 tileHeatValues(TILE_WATER) = 0.0
-tileHeatValues(TILE_GRASS) = 70
-tileHeatValues(TILE_HAY) = 50
-tileHeatValues(TILE_TREE1) = 100
-tileHeatValues(TILE_TREE2) = 140
+tileHeatValues(TILE_GRASS) = 80
+tileHeatValues(TILE_HAY) = 40
+tileHeatValues(TILE_TREE1) = 120
+tileHeatValues(TILE_TREE2) = 180
 tileHeatValues(TILE_TREE3) = 240
 tileHeatValues(TILE_BURNED_TREE) = 0
 tileHeatValues(TILE_BURNED_GRASS) = 0
