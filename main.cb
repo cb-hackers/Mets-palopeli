@@ -10,6 +10,7 @@ gBuffer = MakeImage(SW*4,SH*4)
 lastUpdate = Timer()
 Repeat
 	DrawToImage gbuffer
+	Cls
 	If KeyDown(28) Then
 		GrowTrees()
 	EndIf
@@ -23,12 +24,12 @@ Repeat
 	For tx=0 To MAP_WIDTH-1
 		For ty=0 To MAP_HEIGHT-1
 			id=	mapTiles(tx,ty)
-			temperature=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
+			burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
 			Gosub drawTile
 		Next ty
 	Next tx
 	DrawToScreen
-	gosub scalebuffer
+	if Not KeyDown(cbkeyz) Then Gosub scalebuffer
 	DrawImage gbuffer,0,0
 	
 	DrawScreen
