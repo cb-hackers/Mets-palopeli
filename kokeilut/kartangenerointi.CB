@@ -1,24 +1,177 @@
-Const MAP_WIDTH = 100
-Const MAP_HEIGHT = 100
+Global MAP_WIDTH
+Global MAP_HEIGHT
 
 Const FS_NO_FIRE = 0
 Const FS_BURNING = 1
-Const FS_
+Const FS_SMOULDERING = 2
+
+Const TILE_EMPTY = 0
+Const TILE_GRASS = 1
+Const TILE_TREE1 = 2
+Const TILE_TREE2 = 3
+Const TILE_TREE3 = 4
+Const TILE_ROAD = 5
+Const TILE_WATER = 6
 
 
-Const TILE_GRASS = 0
-Const TILE_TREE1 = 1
-Const TILE_TREE2 = 2
-Const TILE_TREE3 = 3
-Const TILE_ROAD = 4
 
 
-
-
-Dim mapFireState(MAP_WIDTH, MAP_HEIGHT)
-Dim mapTiles(MAP_WIDTH, MAP_HEIGHT)
-
-Function GenerateMap()
+Dim mapFireState(1, 1)
+Dim mapTiles(1, 1)
+Dim treeGrow(1, 1)
+Function GenerateMap(imagePath$)
+	img = LoadImage(imagePath$)
+	MAP_WIDTH = ImageWidth(img)
+	MAP_HEIGHT = ImageHeight(img)
+	ReDim mapFireState(MAP_WIDTH-1, MAP_HEIGHT-1)
+	ReDim mapTiles(MAP_WIDTH-1, MAP_HEIGHT-1)
+	ReDim treeGrow(MAP_WIDTH-1, MAP_HEIGHT-1)	
 	
+	waterPixel = 255
+	roadPixel = 0
+	firePixel = 255 Shl 16
+	treePixel = 255 Shl 8
+	
+	
+	Lock Image(img)
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			pixel = (GetPixel2(x,y,Image(img)) Shl 8) Shr 8
+			
+			If pixel = waterPixel Then
+				mapTiles(x,y) = TILE_WATER
+			ElseIf pixel = roadPixel Then
+				mapTiles(x,y) = TILE_ROAD
+			ElseIf pixel = firePixel Then
+				mapFireState(x,y) = FS_BURNING
+			ElseIf pixel = treePixel Then
+				mapTiles(x,y) = TILE_GRASS + Int((Rnd(0, 1) ^ 4) * 6) / 2
+			EndIf
+		Next y
+	Next x
+	Unlock Image(img)
+	DeleteImage img
+	
+	//Generoi puut
+
 EndFunction
+
+Function DrawMap()
+	Lock SCREEN()
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			pixel = -1
+			If mapFireState(x,y) = FS_BURNING Then
+				pixel = 255 Shl 16
+			Else
+				Select mapTiles(x,y)
+					Case 6
+						pixel = 255
+					Case 5
+						pixel = 0
+					Case 2
+						pixel = 255 Shl 8
+					Case 3
+						pixel = 150 Shl 8
+					Case 4
+						pixel = 50 Shl 8
+					Case 1
+						pixel = 255 Shl 8 + 255 Shl 16
+				EndSelect
+			EndIf
+			
+			PutPixel2 x,y,pixel, SCREEN()
+		Next y
+	Next x
+	Unlock SCREEN()
+EndFunction
+
+
+Function GrowTrees()
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			If mapTiles(x,y) >= TILE_EMPTY And mapTiles(x,y) <= TILE_TREE3 And Rand(1) = 1 Then
+				For i = mapTiles(x,y)*2 To TILE_GRASS Step -1
+					f1# = (Rnd(0, 1)^6)
+					f2# = (Rnd(0, 1)^6)
+					f# = Sqrt(f1# ^2 + f2# ^2)
+					xx = x + Int(f1# * 10.0) * Rand(-1, 1)
+					yy = y + Int(f2# * 10.0) * Rand(-1, 1)
+					If xx >= 0 And xx < MAP_WIDTH And yy >= 0 And yy < MAP_HEIGHT Then
+						treeGrow(xx, yy) = treeGrow(xx, yy) + Int((Rnd(0, 1)^5) * (1.0-f#) * 10)
+					EndIf
+				Next i
+			EndIf
+		Next y
+	Next x
+	For x = 0 To MAP_WIDTH - 1
+		For y = 0 To MAP_HEIGHT - 1
+			If mapTiles(x,y) < TILE_TREE3
+				f = Rand(treeGrow(x,y))
+				If mapTiles(x,y) = TILE_EMPTY And treeGrow(x,y) > 0 Then
+					mapTiles(x,y) = TILE_GRASS
+					treeGrow(x,y) = 0
+				ElseIf mapTiles(x,y) = TILE_GRASS And treeGrow(x,y) > 70
+					mapTiles(x,y) = mapTiles(x,y) + 1
+					treeGrow(x,y) = 0
+				ElseIf mapTiles(x,y) = TILE_TREE1 And treeGrow(x,y) > 85
+					mapTiles(x,y) = mapTiles(x,y) + 1
+					treeGrow(x,y) = 0
+				ElseIf mapTiles(x,y) = TILE_TREE2 And treeGrow(x,y) > 105
+					mapTiles(x,y) = mapTiles(x,y) + 1
+					treeGrow(x,y) = 0
+				EndIf
+			EndIf
+			//If mapTiles(x,y) >= TILE_TREE1 And mapTiles(x,y) <= TILE_TREE3 And Rand(120) = 0 Then
+			//	mapTiles(x,y) = mapTiles(x,y) - 1
+			//	treeGrow(x,y) = 0
+			//EndIf
+		Next y
+	Next x
+EndFunction 
+
+
+SCREEN 400, 400, 0, 1
+SCREEN 100, 100, 0, 2
+
+GenerateMap("testi.bmp")
+i = 0
+Color cbRed
+Repeat
+	DrawMap()
+	If KeyDown(28) Then
+		GrowTrees()
+		i + 1
+		SetWindow "Iterations: " + i
+	EndIf
+	DrawScreen
+Forever
+
+
+Function GrowTrees_OldAlgo()
+	For x = 1 To MAP_WIDTH - 2
+		For y = 1 To MAP_HEIGHT - 2
+			tf = 0
+			If mapTiles(x,y) >= TILE_EMPTY And mapTiles(x,y) <= TILE_TREE2 And Rand(3) = 0 Then
+				For j = -1 To 1 Step 2
+					t = mapTiles(x+j,y)
+					If t >= TILE_GRASS And t <= TILE_TREE3 Then
+						tf = tf + (t-TILE_GRASS+1)
+					EndIf
+					t = mapTiles(x,y+j)
+					If t >= TILE_GRASS And t <= TILE_TREE3 Then
+						tf = tf + (t-TILE_GRASS+1)
+					EndIf
+				Next j
+				tf = tf + Max(0,mapTiles(x,y) - TILE_TREE1)
+				tf = Min(Max((tf+ Rand(-1,1)) / 2, 0), 3)
+				If TILE_EMPTY + tf >= TILE_TREE2 Then tf = tf + Rand(-1, 0)
+				mapTiles(x,y) = TILE_EMPTY + tf
+			EndIf
+		Next y
+	Next x
+EndFunction
+
+
+
 
