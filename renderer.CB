@@ -172,8 +172,10 @@ Function loadtiles()
 	
 	//Trees
 	img=LoadImage("gfx/puu_isokuusi.png")
+	img2=LoadImage("gfx/puu_isokuusi_kaste.png")
 	Tiles(TILE_TREE1,0)=maketile(img,0)	
 	Tiles(TILE_TREE1,1)=maketile(img,1)	
+	Tiles(TILE_TREE1,2)=maketile(img2,0)	
 	
 	Tiles(TILE_BURNED_TREE,0)=maketile(img,3)	
 	Tiles(TILE_BURNED_TREE,1)=maketile(img,4)
@@ -181,14 +183,19 @@ Function loadtiles()
 	Tiles(TILE_HAY,1)=maketile(img,4)
 	
 	img=LoadImage("gfx/puu_isokuusi2.png")
+	img2=LoadImage("gfx/puu_isokuusi2_kaste.png")
 	
 	Tiles(TILE_TREE2,0)=maketile(img,0)
 	Tiles(TILE_TREE2,1)=maketile(img,1)	
+	Tiles(TILE_TREE2,2)=maketile(img2,0)
 	
 	img=LoadImage("gfx/puu_isokuusi3.png")
+	img2=LoadImage("gfx/puu_isokuusi3_kaste.png")
+	
 	
 	Tiles(TILE_TREE3,0)=maketile(img,0)
 	Tiles(TILE_TREE3,1)=maketile(img,1)	
+	Tiles(TILE_TREE3,2)=maketile(img2,0)	
 	
 EndFunction
 
