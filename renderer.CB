@@ -68,6 +68,11 @@ kamera:
 	sy=(tx+(ty+2))/2.0*TH	+cy
 Return
 
+kamera2:
+	sx2=(tx2-(ty2+2))/2.0*TW	+cx + TW * 0.5
+	sy2=(tx2+(ty2+2))/2.0*TH	+cy
+Return
+
 inversekamera:
 	tx = (sx*TH+sy*TW-cx*TH-cy*TW)/(TW*TH)
 	ty = (-sx*TH+sy*TW+cx*TH-cy*TW)/(TW*TH)
@@ -75,11 +80,23 @@ inversekamera:
 Return
 
 drawcopter:
+		sx=MouseX()/4.0
+		sy=MouseY()/4.0
+		Gosub inversekamera
+
+		a = (GetAngle(tmpcamx#, tmpcamy#, copterx#, coptery#)-45) Mod 360
+		
+		If a > 0 And a < 90 Then dir = 0
+		If a > 90 And a < 180 Then dir = 1
+		If a > 180 And a < 270 Then dir = 2
+		If a > 270 And a < 360 Then dir = 3
+		
 		tx=copterx#
 		ty=coptery#
 		Gosub kamera
-		DrawImage copter(0,0),sx-TW/2,sy-ImageHeight(copter(0,0))
-		DrawImage copter(0,1),sx-TW/2,-copterz#+sy-ImageHeight(copter(0,1))
+		DrawImage copter(dir,0),sx-TW/2,sy-ImageHeight(copter(dir,0))
+		DrawImage copter(dir,1),sx-TW/2,-copterz#+sy-ImageHeight(copter(dir,1))
+		
 Return 
 
 Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
