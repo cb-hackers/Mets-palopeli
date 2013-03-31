@@ -6,10 +6,8 @@ SCREEN SW*4,SH*4
 
 Type PARTICLES
     Field t
-    Field tx
-    Field ty
-    Field x As Float
-    Field y As Float
+    Field tx As Float
+    Field ty As Float
 	Field z As Float
     Field xv As Float
     Field yv As Float
@@ -73,9 +71,9 @@ kamera:
 	sy=(tx+(ty+2))/2.0*TH	+cy
 Return
 
-kamera2:
-	sx2=(tx2-(ty2+2))/2.0*TW	+cx + TW * 0.5
-	sy2=(tx2+(ty2+2))/2.0*TH	+cy
+kamerafloat:
+	sxf#=(txf#-(tyf#+2))/2.0*TW	+cx + TW * 0.5
+	syf#=(txf#+(tyf#+2))/2.0*TH	+cy
 Return
 
 inversekamera:
@@ -89,7 +87,7 @@ drawcopter:
 		sy=MouseY()/4.0
 		Gosub inversekamera
 
-		a = (GetAngle(tmpcamx#, tmpcamy#, copterx#, coptery#)-45) Mod 360
+		a = (GetAngle(tmpcopterx#, tmpcoptery#, copterx#, coptery#)-45) Mod 360
 		
 		If a > 0 And a < 90 Then dir = 0
 		If a > 90 And a < 180 Then dir = 1
@@ -107,16 +105,14 @@ Return
 Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
     p.PARTICLES = New(PARTICLES)
     p\t=t
-	p\tx=x
-	p\ty=y
-    p\x = TW/2 + Rand(-3,3)
-    p\y = Rand(-3,3)
-	p\z=z + Rand(-3,3)
-	p\xv=xv + Rnd(-2,2)
-	p\yv=yv + Rnd(-2,2)
+	p\tx=x+0.5+ Rnd(-0.3,0.3)
+	p\ty=y+0.5+ Rnd(-0.3,0.3)
+	p\z=z + Rnd(-0.3,0.3)
+	p\xv=xv + Rnd(-0.4,0.4)
+	p\yv=yv + Rnd(-0.4,0.4)
 	p\zv=zv
-	p\xa=xa + Rnd(-35,35)
-	p\ya=ya + Rnd(-35,35)
+	p\xa=xa + Rnd(-4,4)
+	p\ya=ya + Rnd(-4,4)
 	p\za=za
 	p\f=f
 	p\l=l

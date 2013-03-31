@@ -94,8 +94,8 @@ main:
 Return
 
 updatecopter:
-	tmpcamx# = copterx
-	tmpcamy# = coptery
+	tmpcopterx# = copterx
+	tmpcoptery# = coptery
 
 	sx=MouseX()/4.0
 	sy=MouseY()/4.0
@@ -106,9 +106,12 @@ updatecopter:
 	copterz=40+Sin(Timer()/10)*5
 	
 	'SetWindow "TX:" + tx + " TY:"+ty + " CX:"+copterx + " CY:"+coptery
+	
+	
+	
 	If MouseDown(1) Then
         For i=0 To 10
-            makeparticle(2,copterx,coptery,copterz,0,0,-40.0,0,0,-40,0,copterz/40*550)
+            makeparticle(2,copterx+1,coptery,copterz+10,0,0,-40.0,0,0,-40,0,copterz/30*550)
         Next i
 	EndIf
     If MouseDown(2) And copterx>=0 And coptery>=0 And copterx<MAP_WIDTH And coptery<MAP_HEIGHT Then
@@ -118,12 +121,12 @@ Return
 
 updateParticles:
 	For p.particles = Each particles
-		tx = p\tx
-		ty = p\ty
-		Gosub kamera
-		DrawImage pImgs(p\t, p\f), sx+p\x, sy+p\y-p\z
-		p\x = p\x + (p\xv + WIND_SPEED_X*1.5) * t#
-		p\y = p\y + (p\yv + WIND_SPEED_Y*1.5) * t#
+		txf# = p\tx
+		tyf# = p\ty
+		Gosub kamerafloat
+		DrawImage pImgs(p\t, p\f), sxf, syf-p\z
+		p\tx = p\tx + (p\xv + WIND_SPEED_X*0.2) * t#
+		p\ty = p\ty + (p\yv + WIND_SPEED_Y*0.2) * t#
 		p\z = p\z + p\zv * t#
 		p\xv = p\xv + p\xa * t#
 		p\yv = p\yv + p\ya * t#
@@ -132,7 +135,7 @@ updateParticles:
 		If p\f > pFrames Then p\f = 0
 		If Timer() > p\st + p\l Then
 			If  p\tx > 0 And p\ty > 0 Then
-				heat(p\tx,p\ty) = heat(p\tx,p\ty) - 4
+				heat(int(p\tx),int(p\ty)) = heat(int(p\tx),int(p\ty)) - 15
 				//If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
 			EndIf
 			Delete p
