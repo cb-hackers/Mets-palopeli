@@ -61,6 +61,7 @@ main:
     c\etype = ENTITY_COPTER
     c\tank = 5000
     c\z = 40
+    makingWP = NULL
     // Create test copter
     'c.ENTITIES = New(ENTITIES)
     'c\etype = ENTITY_COPTER
@@ -128,27 +129,60 @@ main:
 		EndIf
         
         If MouseHit(1) Then
-            wp.WAYPOINTS = New(WAYPOINTS)        
-            sx = MouseX() / 4.0
-            sy = MouseY() / 4.0
-            Gosub inversekamera
-            wp\tx = tx
-            wp\ty = ty
-            wp\n = NULL
-            
-            For c.ENTITIES = Each ENTITIES
-                If c\etype = ENTITY_COPTER Then
-                    c\wayPoint = ConvertToInteger(wp)
+            If Not makingWP Then
+                wp.WAYPOINTS = New(WAYPOINTS)        
+                sx = MouseX() / 4.0
+                sy = MouseY() / 4.0
+                Gosub inversekamera
+                wp\tx = tx
+                wp\ty = ty
+                wp\n = ConvertToInteger(First(WAYPOINTS))
+                // Update waypoint
+                wpo.WAYPOINTS = Before(wp)
+                If wpo <> NULL Then
+                    wpo\n = ConvertToInteger(wp)
+                Else
+                    // No waypoints, so this is teh first one.
+                    For c.ENTITIES = Each ENTITIES
+                        If c\etype = ENTITY_COPTER Then c\wayPoint = ConvertToInteger(wp)
+                    Next c
                 EndIf
-            Next c
+                makingWP = ConvertToInteger(wp)
+            Else
+                wp.WAYPOINTS = ConvertToType(makingWP)
+                sx = MouseX() / 4.0
+                sy = MouseY() / 4.0
+                Gosub inversekamera
+                wp\lx = tx
+                wp\ly = ty
+                makingWP = 0
+            EndIf
         EndIf
         
+        Color cbwhite
         For wp.WAYPOINTS = Each WAYPOINTS
             tx = wp\tx
             ty = wp\ty
             Gosub kamera
+            wpx = sx
+            wpy = sy
             Box sx,sy,4,4,1
+            If wp\lx And wp\ly Then
+                tx = wp\lx
+                ty = wp\ly
+                Gosub kamera
+                Line sx,sy,wpx,wpy
+            EndIf
         Next wp
+        
+        If KeyHit(cbkeyc) Then
+            For wp.WAYPOINTS = Each WAYPOINTS
+                Delete wp
+            Next wp
+            For c.ENTITIES = Each ENTITIES
+                If c\etype = ENTITY_COPTER Then c\wayPoint = 0
+            Next c
+        EndIf
         
         DrawToScreen
         If doublePx Then Gosub scalebuffer
@@ -196,16 +230,36 @@ updatecopter:
                 follow# = 0.04
                 tmpx = c\tx
                 tmpy = c\ty
-                // Move to waypoint
-                c\tx = c\tx * (1 - follow) + wp\tx * follow
-                c\ty = c\ty * (1 - follow) + wp\ty * follow
+                // WP not reached
+                If Not c\start Then
+                    // Move to waypoint
+                    c\tx = c\tx * (1 - follow) + wp\tx * follow
+                    c\ty = c\ty * (1 - follow) + wp\ty * follow
+                    // Check distance
+                    d = Distance(c\tx, c\ty, wp\tx, wp\ty)
+                    If d <= 1 Then
+                        c\start = True
+                    EndIf
+                Else
+                    // Waypoint reached
+                    // Move to end of waypoint line
+                    c\tx = c\tx * (1 - follow) + wp\lx * follow
+                    c\ty = c\ty * (1 - follow) + wp\ly * follow
+                    // Check distance
+                    d = Distance(c\tx, c\ty, wp\lx, wp\ly)
+                    If d <= 1 Then
+                        // Change to next waypoint
+                        c\start = False
+                        If wp\n Then c\wayPoint = wp\n
+                    EndIf
+                EndIf
                 // Calculate speed
                 c\xv = c\tx - tmpx
-                c\yv = c\ty - tmpy
+                c\yv = c\ty - tmpy             
             EndIf
             
             If  c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
-                If heat(Int(c\tx), Int(c\ty)) > 20 Then
+                If c\start Then
                     For i=0 To 10
                         makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10, c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550)
                     Next i
@@ -233,7 +287,7 @@ updateParticles:
             p\zv = p\zv + p\za * t#
             p\f = p\f + 3
             If p\f > pFrames Then p\f = 0
-            If Timer() > p\st + p\l Then
+            If Timer() > p\start + p\l Then
                 If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
                     Select p\t
                         Case 0'PARTICLE_FIRE

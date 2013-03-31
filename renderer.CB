@@ -16,6 +16,7 @@ Type ENTITIES
 	Field z As Float
     Field l
     Field wayPoint
+    Field start
     // Particles
     Field xv As Float
     Field yv As Float
@@ -24,7 +25,6 @@ Type ENTITIES
     Field ya As Float
     Field za As Float
     Field f
-    Field st
     // Copter
     Field tank
 EndType
@@ -33,6 +33,8 @@ Type WAYPOINTS
     Field tx
     Field ty
     Field n
+    Field lx
+    Field ly
 EndType
 
 Dim Tiles(TILE_COUNT,4)
@@ -146,7 +148,7 @@ Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
 	p\za=za
 	p\f=f
 	p\l=l
-	p\st=Timer()
+	p\start=Timer()
 EndFunction
 
 Function loadcopter()
