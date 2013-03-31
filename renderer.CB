@@ -4,17 +4,19 @@ Const SW=200
 Const SH=150
 SCREEN SW*4,SH*4
 
-Type particle
+Type PARTICLES
     Field t
-    Field x
-    Field y
-	Field z
+    Field tx
+    Field ty
+    Field x As Float
+    Field y As Float
+	Field z As Float
     Field xv As Float
     Field yv As Float
-    Field yz As Float
+    Field zv As Float
     Field xa As Float
     Field ya As Float
-    Field yz As Float
+    Field za As Float
     Field f
     Field st
 	Field l
@@ -28,44 +30,26 @@ loadflames()
 loadcopter()
 
 // Load particle images
-Dim pImgs(2,32)
+Const pFrames = 32
+Dim pImgs(2,pFrames)
 pImg = LoadImage("gfx/tuli_partikkeli.png")
-For i=0 To 32
+For i=0 To pFrames
 	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
     pImgs(0,i)=j
 Next i
 pImg = LoadImage("gfx/savu_partikkeli.png")
-For i=0 To 32
+For i=0 To pFrames
 	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
     pImgs(1,i)=j
 Next i
 pImg = LoadImage("gfx/vaahto_partikkeli.png")
-For i=0 To 32
+For i=0 To pFrames
 	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
     pImgs(2,i)=j
 Next i
-
-Function makeparticle(t,x,y,z,xv,yv,zv,xa,ya,za,f,l)
-	remstart
-	qp.particle = New(particle)
-	qp\t=t
-	qp\x=x
-	qp\y=y
-	qp\z=z
-	qp\xv=xv
-	qp\yv=yv
-	qp\zv=zv
-	qp\xa=xa
-	qp\ya=ya
-	qp\za=za
-	qp\f=f
-	qp\l=l
-	qp\st=Timer()
-	remend
-EndFunction
 
 cx = 200
 cy = 50
@@ -95,6 +79,25 @@ drawcopter:
 		Gosub kamera
 		DrawImage copter(0),sx,sy-imageheight(copter(0))
 Return 
+
+Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
+    p.PARTICLES = New(PARTICLES)
+    p\t=t
+	p\tx=x
+	p\ty=y
+    p\x = 10+Rand(-5,5)
+    p\y = 4+Rand(-5,5)
+	p\z=z + Rand(-5,5)
+	p\xv=xv
+	p\yv=yv
+	p\zv=zv
+	p\xa=xa
+	p\ya=ya
+	p\za=za
+	p\f=f
+	p\l=l
+	p\st=Timer()
+EndFunction
 
 Function loadcopter()
 	img=LoadImage("gfx/lollerkopter.png")

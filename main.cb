@@ -1,5 +1,4 @@
 'This is your first CoolBasic program!
-
 Include "map.cb"
 Include	"renderer.cb"
 Include "firespreading.cb"
@@ -20,13 +19,16 @@ Forever
 copterx#=0
 coptery#=0
 
-
 main:
     GenerateMap("maps/testi.png", 0)
-    lastUpdate = Timer()
+    For i=0 To 100
+        GrowTrees()
+    Next i
     part = 0
+    lastUpdate = Timer()
+    ClearMouse
     Repeat
-        SetWindow "FPS:" + FPS()
+        'SetWindow "FPS:" + FPS()
         DrawToImage gbuffer
         Cls
         If KeyDown(28) Then
@@ -34,10 +36,10 @@ main:
         EndIf
         t# = (Timer() - lastUpdate) / 1000.0
         lastUpdate = Timer()
-        If KeyDown(cbKeySpace) Then
+        'If KeyDown(cbKeySpace) Then
             UpdateFireSpreading(t#, part)
             part + 1
-        EndIf
+        'EndIf
 
 
 		doublePx = Not KeyDown(cbkeyZ)
@@ -75,24 +77,28 @@ main:
 			Next tx
 			DrawImage gui,0,0
 		EndIf
-		remstart
         // Update particles
-        For p.particle = Each particle
-
-			tx=p\x
-			ty=p\y
+        For p.particles = Each particles
+			tx = p\tx
+			ty = p\ty
 			Gosub kamera
-            DrawImage pImgs(p\t, p\f), sx, sy
-            p\x + p\xv
-            p\y + p\yv
-			p\z + p\yz
-            p\xv + p\xa
-            p\yv + p\ya
-			p\zv + p\za
-            p\l - 1
-            If p\l < 1 Then Delete p
+            DrawImage pImgs(p\t, p\f), sx+p\x, sy+p\y-p\z
+            p\x = p\x + p\xv + WIND_SPEED_X/2
+            p\y = p\y + p\yv + WIND_SPEED_Y/2
+			p\z = p\z + p\zv
+            p\xv = p\xv + p\xa
+            p\yv = p\yv + p\ya
+			p\zv = p\zv + p\za
+            p\f = p\f + 3
+            If p\f > pFrames Then p\f = 0
+            If Timer() > p\st + p\l Then
+                If  p\tx > 0 And p\ty > 0 Then
+                    heat(p\tx,p\ty) = heat(p\tx,p\ty) - 4
+                    If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
+                EndIf
+                Delete p
+            EndIf
         Next p
-remend
         DrawToScreen
         If doublePx Then Gosub scalebuffer
         DrawImage gbuffer,0,0
@@ -105,12 +111,17 @@ updatecopter:
 	sx=MouseX()/4.0
 	sy=MouseY()/4.0
 	Gosub inversekamera
-	follow#=0.03
+	follow#=0.05
 	copterx=copterx*(1-follow)+(tx-1)*follow
 	coptery=coptery*(1-follow)+(ty+2)*follow
-	If GetMouse()=1 Then
-		makeparticle(2,tx,ty,0,0,0,0,0,0,-0.1,0,100)
+	If MouseDown(1) Then
+        For i=0 To 10
+            makeparticle(2,copterx,coptery,50,0,0,-4.0,0,0,-1,0,400)
+        Next i
 	EndIf
+    If MouseDown(2) Then
+        heat(Int(copterx), Int(coptery)) = heat(Int(copterx), Int(coptery)) + 20
+    EndIf
 Return
 
 scaleBuffer:
@@ -119,12 +130,13 @@ scaleBuffer:
         CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
 		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
         CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
-    next sb_i
-    for sb_i=SW To 0 step -1
-        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,image(gBuffer),image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,image(gBuffer),image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,image(gBuffer),image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),image(gBuffer)
+    Next sb_i
+    For sb_i=SW To 0 Step -1
+        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,Image(gBuffer),Image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
+        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
 
-    next sb_i
+    Next sb_i
 Return
+
