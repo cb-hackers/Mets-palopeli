@@ -180,7 +180,7 @@ main:
                 Delete wp
             Next wp
             For c.ENTITIES = Each ENTITIES
-                If c\etype = ENTITY_COPTER Then c\wayPoint = 0
+                If c\etype = ENTITY_COPTER Then c\wayPoint = 0 : c\start = 0
             Next c
         EndIf
         
