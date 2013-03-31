@@ -56,7 +56,7 @@ Function UpdateFireSpreading(t#, part)
 				heat(x,y) = heat(x,y) - heat(x,y) * HEAT_DISPENCE * t#
 			ElseIf heat(x,y) < 0
 				heat(x,y) = heat(x,y) - heat(x,y) * DRYING_MULT * t#
-				SetWindow "Heat("+x+", "+y+") = "+ heat(x,y)
+				'SetWindow "Heat("+x+", "+y+") = "+ heat(x,y)
 			EndIf
 		Next y
 	Next x

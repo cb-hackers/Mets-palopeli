@@ -53,6 +53,12 @@ main:
     part = 0
     lastUpdate = Timer()
     ClearMouse
+    ClearKeys
+    
+    // Create test copter
+    c.ENTITIES = New(ENTITIES)
+    c\tank = 5000
+    
     Repeat
         'SetWindow "FPS:" + FPS()
         DrawToImage gbuffer
@@ -62,21 +68,14 @@ main:
         EndIf
         t# = (Timer() - lastUpdate) / 1000.0
         lastUpdate = Timer()
-        'If KeyDown(cbKeySpace) Then
-            UpdateFireSpreading(t#, part)
-            part + 1
-        'EndIf
-
+        UpdateFireSpreading(t#, part)
+        part + 1
 
 		doublePx = Not KeyDown(cbkeyZ)
 		If doublePx Then Gosub updatecopter
 		
-        cx=cx+((LeftKey() Or KeyDown(cbkeya))-(RightKey() Or KeyDown(cbkeyd)))*4 * (1 + (Not doublePx) * 3)
-        cy=cy-((DownKey() Or KeyDown(cbkeys))-(UpKey() Or KeyDown(cbkeyw)))*4 * (1 + (Not doublePx) * 3)
-
-		xlimit=-cx/16-cy/8
-		ylimit=cx/16-cy/8
-		
+        cx=cx+((LeftKey() Or KeyDown(cbkeya))-(RightKey() Or KeyDown(cbkeyd)))*4 * (1 + (Not doublePx) * 3) * 35 * t
+        cy=cy-((DownKey() Or KeyDown(cbkeys))-(UpKey() Or KeyDown(cbkeyw)))*4 * (1 + (Not doublePx) * 3) * 35 * t
 	
 		If Not doublePx Then 
 			cx = cx + SW*1.5 : cy = cy + SH*1.5
@@ -94,6 +93,8 @@ main:
 			cx = cx - SW*1.5 : cy = cy - SH*1.5
 			//DrawImage gui,300,250
 		Else	
+            xlimit=-cx/16-cy/8
+            ylimit=cx/16-cy/8
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
 				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
 					burning=Min(Max(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,0),1)
@@ -128,20 +129,26 @@ updatecopter:
 	follow#=0.03
 	copterx=copterx*(1-follow)+tx*follow
 	coptery=coptery*(1-follow)+ty*follow
-	copterz=40+Sin(Timer()/10)*5
+
+	copterz=40 + Sin(Timer()/10) * 6
 	
+    xcopterv# = copterx - tmpcopterx
+    ycopterv# = coptery - tmpcoptery
+    
 	If MouseDown(1) Then
         For i=0 To 10
-            makeparticle(2,copterx+1,coptery,copterz+10,0,0,-40.0,0,0,-40,0,copterz/30*550)
+            makeparticle(PARTICLE_FOAM,copterx+1,coptery,copterz+10,xcopterv,ycopterv,-40.0,0,0,-40,0,copterz/30*550)
         Next i
 	EndIf
     If MouseDown(2) And copterx>=0 And coptery>=0 And copterx<MAP_WIDTH And coptery<MAP_HEIGHT Then
-        heat(Int(copterx), Int(coptery)) = heat(Int(copterx), Int(coptery)) + 20
+        For i=0 To 10
+            makeparticle(PARTICLE_FIRE,copterx+1,coptery,copterz+10,0,0,-40.0,0,0,-40,0,copterz/30*550)
+        Next i
     EndIf
 Return
 
 updateParticles:
-	For p.particles = Each particles
+	For p.ENTITIES = Each ENTITIES
 		txf# = p\tx
 		tyf# = p\ty
 		Gosub kamerafloat
@@ -156,7 +163,12 @@ updateParticles:
 		If p\f > pFrames Then p\f = 0
 		If Timer() > p\st + p\l Then
 			If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
-				heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) - 15
+                Select p\t
+                    Case 0'PARTICLE_FIRE
+                        heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) + 15
+                    Case 2'PARTICLE_FOAM
+                        heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) - 15
+                EndSelect
 			EndIf
 			Delete p
 		EndIf

@@ -4,11 +4,15 @@ Const SW=200
 Const SH=150
 SCREEN SW*4,SH*4
 
-Type PARTICLES
+Type ENTITIES
+    // Generic
     Field t
     Field tx As Float
     Field ty As Float
 	Field z As Float
+    Field l
+    Field nextWayPoint
+    // Particles
     Field xv As Float
     Field yv As Float
     Field zv As Float
@@ -17,7 +21,14 @@ Type PARTICLES
     Field za As Float
     Field f
     Field st
-	Field l
+    // Copter
+    Field tank
+EndType
+
+Type WAYPOINTS
+    Field tx
+    Field ty
+    Field id
 EndType
 
 Dim Tiles(TILE_COUNT,4)
@@ -29,24 +40,27 @@ loadcopter()
 
 // Load particle images
 Const pFrames = 32
+Const PARTICLE_FIRE = 0
+Const PARTICLE_SMOKE = 1
+Const PARTICLE_FOAM = 2
 Dim pImgs(2,pFrames)
 pImg = LoadImage("gfx/tuli_partikkeli.png")
 For i=0 To pFrames
 	j=MakeImage(1,1)
 	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(0,i)=j
+    pImgs(PARTICLE_FIRE,i)=j
 Next i
 pImg = LoadImage("gfx/savu_partikkeli.png")
 For i=0 To pFrames
 	j=MakeImage(1,1)
 	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(1,i)=j
+    pImgs(PARTICLE_SMOKE,i)=j
 Next i
 pImg = LoadImage("gfx/vaahto_partikkeli.png")
 For i=0 To pFrames
 	j=MakeImage(1,1)
 	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(2,i)=j
+    pImgs(PARTICLE_FOAM,i)=j
 Next i
 
 cx = 200
@@ -105,7 +119,7 @@ drawcopter:
 Return 
 
 Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
-    p.PARTICLES = New(PARTICLES)
+    p.ENTITIES = New(ENTITIES)
     p\t=t
 	p\tx=x+0.5+ Rnd(-0.3,0.3)
 	p\ty=y+0.5+ Rnd(-0.3,0.3)
