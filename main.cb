@@ -5,6 +5,7 @@ Include "firespreading.cb"
 
 gBuffer = MakeImage(SW*4,SH*4)
 gui=LoadImage("gfx/gui.png")
+minimap=MakeImage(50,50)
 Include "menu.cb"
 
 Repeat
@@ -92,7 +93,6 @@ main:
 				EndIf
 			Next tx
 			cx = cx - SW*1.5 : cy = cy - SH*1.5
-			//DrawImage gui,300,250
 		Else	
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
 				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
@@ -107,7 +107,7 @@ main:
 				EndIf
 				tx=ttx
 			Next tx
-			DrawImage gui,0,0
+			Gosub drawgui
 		EndIf
         
         DrawToScreen
@@ -161,6 +161,31 @@ updateParticles:
 			Delete p
 		EndIf
 	Next p
+Return
+
+drawgui:
+	DrawToImage minimap
+	'Lock(minimap)
+	For x=0 To MAP_WIDTH-1 Step 2
+		For y=0 To MAP_HEIGHT-1 Step 2
+			id=mapTiles(x,y)
+			road=(id=TILE_ROAD)*50
+			PutPixel x/2,y/2, Max(Min(heat(x,y)+road,255),0) Shl 16+(1+60*(id>=TILE_TREE1 And id<=TILE_TREE3)+road) Shl 8 + Int(Min(255,-Min(Min(heat(x,y),255),0))+(id=TILE_WATER)*70)+road
+			
+		Next y
+	Next x
+	
+	sx=100
+	sy=75
+	Gosub inversekamera
+	Color 255,255,255
+	PutPixel  147+tx/2,3+ty/2,255 Shl 16 + 255 Shl 8 + 255
+	
+	'Unlock
+	DrawToImage gbuffer
+	DrawImage minimap,147,3
+	Dot  147+tx/2,3+ty/2
+	DrawImage gui,0,0
 Return
 
 
