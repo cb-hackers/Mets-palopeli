@@ -4,9 +4,8 @@ Include	"renderer.cb"
 Include "firespreading.cb"
 
 gBuffer = MakeImage(SW*4,SH*4)
-gui=LoadImage("gfx/gui.png")
-minimap=MakeImage(50,50)
-Include "menu.cb"
+
+Include "gui.cb"
 
 Repeat
     Gosub menu
@@ -249,30 +248,7 @@ updateParticles:
 	Unlock
 Return
 
-drawgui:
-	DrawToImage minimap		
-	Lock(minimap)
-	For x=0 To MAP_WIDTH-1 Step 2
-		For y=0 To MAP_HEIGHT-1 Step 2
-			id=mapTiles(x,y)
-			road=(id=TILE_ROAD)*50
-			Color Max(Min(heat(x,y)+road,255),0),(1+60*(id>=TILE_TREE1 And id<=TILE_TREE3)+road),Int(Min(255,-Min(Min(heat(x,y),255),0))+(id=TILE_WATER)*70)+road
-			Line x/2,y/2,x/2+1,y/2
-		Next y
-	Next x
-	
-	sx=100
-	sy=75
-	Gosub inversekamera
-	Color 255,255,255
-	PutPixel  tx/2,ty/2,255 Shl 16 + 255 Shl 8 + 255
-	
-	Unlock
-	DrawToImage gbuffer
-	DrawImage minimap,147,3
-	'Dot  147+tx/2,3+ty/2
-	DrawImage gui,0,0
-Return
+
 
 
 

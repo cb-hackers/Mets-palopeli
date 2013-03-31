@@ -1,0 +1,88 @@
+
+gui=LoadImage("gfx/gui.png")
+minimap=MakeImage(50,50)
+Include "menu.cb"
+
+Dim guibuttons(10,1)
+Const GUI_COPTER=0
+Const GUI_TRUCK=1
+Const GUI_SELECT=2
+Const GUI_DELETE=3
+Const GUI_PLACEHOLDER1=4
+Const GUI_PLACEHOLDER2=5
+Const GUI_EMPTY=6
+Const GUI_WAYPOINT=7
+
+
+guiaction=0
+
+
+loadguibuttons()
+
+
+Goto guiohi
+
+drawgui:
+	DrawToImage minimap		
+	Lock(minimap)
+	For x=0 To MAP_WIDTH-1 Step 2
+		For y=0 To MAP_HEIGHT-1 Step 2
+			id=mapTiles(x,y)
+			road=(id=TILE_ROAD)*50
+			Color Max(Min(heat(x,y)+road,255),0),(1+60*(id>=TILE_TREE1 And id<=TILE_TREE3)+road),Int(Min(255,-Min(Min(heat(x,y),255),0))+(id=TILE_WATER)*70)+road
+			Line x/2,y/2,x/2+1,y/2
+		Next y
+	Next x
+	
+	sx=100
+	sy=75
+	Gosub inversekamera
+	Color 255,255,255
+	PutPixel  tx/2,ty/2,255 Shl 16 + 255 Shl 8 + 255
+	Unlock
+	DrawToImage gbuffer
+	DrawImage minimap,147,3
+	DrawImage gui,0,0
+	For i=0 To 5
+		DrawImage guibuttons(i,i=guiaction),10+i*20,124
+	Next i
+	If guiaction=GUI_HELICOPTER Then
+		DrawImage guibuttons(GUI_EMPTY,0),150,124
+		DrawImage guibuttons(GUI_WAYPOINT,0),174,124
+	Else
+		DrawImage guibuttons(GUI_EMPTY,0),150,124
+		DrawImage guibuttons(GUI_EMPTY,0),174,124
+	EndIf
+Return
+
+guiohi:
+
+Function loadguibuttons()
+	img=LoadImage("gfx/GUI_helikopteri.png")
+	guibuttons(GUI_COPTER,0)=maketile(img,0)
+	guibuttons(GUI_COPTER,1)=maketile(img,1)
+	img=LoadImage("gfx/GUI_paloauto.png")
+	guibuttons(GUI_TRUCK,0)=maketile(img,0)
+	guibuttons(GUI_TRUCK,1)=maketile(img,1)
+	img=LoadImage("gfx/GUI_select.png")
+	guibuttons(GUI_SELECT,0)=maketile(img,0)
+	guibuttons(GUI_SELECT,1)=maketile(img,1)
+	img=LoadImage("gfx/GUI_delete.png")
+	guibuttons(GUI_DELETE,0)=maketile(img,0)
+	guibuttons(GUI_DELETE,1)=maketile(img,1)
+	img=LoadImage("gfx/GUI_default.png")
+	guibuttons(GUI_PLACEHOLDER1,0)=maketile(img,0)
+	guibuttons(GUI_PLACEHOLDER1,1)=maketile(img,1)
+	img=LoadImage("gfx/GUI_default.png")
+	guibuttons(GUI_PLACEHOLDER2,0)=maketile(img,0)
+	guibuttons(GUI_PLACEHOLDER2,1)=maketile(img,1)
+	img=LoadImage("gfx/GUI_default.png")
+	guibuttons(GUI_EMPTY,0)=maketile(img,0)
+	guibuttons(GUI_EMPTY,1)=maketile(img,1)
+	img=LoadImage("gfx/GUI_waypoint.png")
+	guibuttons(GUI_WAYPOINT,0)=maketile(img,0)
+	guibuttons(GUI_WAYPOINT,1)=maketile(img,1)
+	
+EndFunction
+
+
