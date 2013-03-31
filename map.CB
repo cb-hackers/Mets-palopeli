@@ -16,6 +16,7 @@ Const TILE_COUNT = 9
 
 
 Const HEAT_TRANS = 0.058
+Const DRYING_MULT = 0.005
 Const MAX_HEAT = 1000
 Const MIN_HEAT = 0.1
 Const HEAT_DISPENCE = 0.61
