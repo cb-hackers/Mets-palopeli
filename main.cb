@@ -22,8 +22,31 @@ coptery#=0
 
 main:
     GenerateMap("maps/testi.png", 0)
-    For i=0 To 100
+    Color cbwhite
+    DrawToScreen
+    iterations# = 105
+    cx=100
+    cy=-325
+    For i=0 To Int(iterations)
         GrowTrees()
+        // Render loading animation
+        If i Mod 15 = 1 Then
+            cx = cx + SW*1.5 : cy = cy + SH*1.5
+            For tx=0 To MAP_WIDTH-1
+                For ty=0 To MAP_HEIGHT-1
+                    id = mapTiles(tx,ty)
+                    Gosub drawTile
+                Next ty
+            Next tx
+            cx = cx - SW*1.5 : cy = cy - SH*1.5
+            Color cbblack
+            CenterText 401,315,"Growing trees..."
+            Box 399-(i/iterations*800)/2,289,i/iterations*800+2,22,1
+            Color cbwhite
+            CenterText 400,314,"Growing trees..."
+            Box 400-(i/iterations*800)/2,290,i/iterations*800,20,1
+            DrawScreen
+        EndIf
     Next i
     part = 0
     lastUpdate = Timer()
@@ -105,7 +128,6 @@ updatecopter:
 	coptery=coptery*(1-follow)+ty*follow
 	copterz=40+Sin(Timer()/10)*5
 	
-	'SetWindow "TX:" + tx + " TY:"+ty + " CX:"+copterx + " CY:"+coptery
 	If MouseDown(1) Then
         For i=0 To 10
             makeparticle(2,copterx,coptery,copterz,0,0,-40.0,0,0,-40,0,copterz/40*550)
