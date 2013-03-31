@@ -43,25 +43,25 @@ Const pFrames = 32
 Const PARTICLE_FIRE = 0
 Const PARTICLE_SMOKE = 1
 Const PARTICLE_FOAM = 2
-Dim pImgs(2,pFrames)
+Dim pColors(2,pFrames)
+
 pImg = LoadImage("gfx/tuli_partikkeli.png")
+DrawToImage pImg
 For i=0 To pFrames
-	j=MakeImage(1,1)
-	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(PARTICLE_FIRE,i)=j
+    pColors(PARTICLE_FIRE,i)=GetPixel(i,0)
 Next i
 pImg = LoadImage("gfx/savu_partikkeli.png")
+DrawToImage pImg
 For i=0 To pFrames
-	j=MakeImage(1,1)
-	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(PARTICLE_SMOKE,i)=j
+	pColors(PARTICLE_SMOKE,i)=GetPixel(i,0,Image(pImg))
 Next i
 pImg = LoadImage("gfx/vaahto_partikkeli.png")
+DrawToImage pImg
 For i=0 To pFrames
-	j=MakeImage(1,1)
-	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
-    pImgs(PARTICLE_FOAM,i)=j
+	pColors(PARTICLE_FOAM,i)=GetPixel(i,0,Image(pImg))
 Next i
+
+DrawToScreen
 
 cx = 200
 cy = 50
