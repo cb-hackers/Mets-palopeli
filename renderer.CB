@@ -24,7 +24,7 @@ EndType
 
 Dim Tiles(TILE_COUNT,4)
 Dim flames(2,4)
-Dim copter(3)
+Dim copter(3,1)
 loadtiles()
 loadflames()
 loadcopter()
@@ -78,7 +78,8 @@ drawcopter:
 		tx=copterx#
 		ty=coptery#
 		Gosub kamera
-		DrawImage copter(0),sx-TW/2,sy-ImageHeight(copter(0))
+		DrawImage copter(0,0),sx-TW/2,sy-ImageHeight(copter(0,0))
+		DrawImage copter(0,1),sx-TW/2,-copterz#+sy-ImageHeight(copter(0,1))
 Return 
 
 Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
@@ -101,8 +102,10 @@ Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
 EndFunction
 
 Function loadcopter()
-	img=LoadImage("gfx/kopteri_varjo.png")
-	makecopter(img)
+	varjo=LoadImage("gfx/kopteri_varjo.png")
+	runko=LoadImage("gfx/kopteri_runko.png")
+	makecopter(varjo,0)
+	makecopter(runko,1)
 EndFunction
 
 Function loadflames()
@@ -155,11 +158,11 @@ Function maketile(img,frame)
 	Return i
 EndFunction
 
-Function makecopter(img)
+Function makecopter(img,ii)
 	w = ImageWidth(img)/4
 	h = ImageHeight(img)
 	For i = 0 To 3
-		copter(i)=MakeImage(w,h)
-		CopyBox w*i,0,w,h,0,0,Image(img),Image(copter(i))
+		copter(i,ii)=MakeImage(w,h)
+		CopyBox w*i,0,w,h,0,0,Image(img),Image(copter(i,ii))
 	Next i
 EndFunction 
