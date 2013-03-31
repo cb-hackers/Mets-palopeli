@@ -57,15 +57,19 @@ main:
     
     // Create test copter
     c.ENTITIES = New(ENTITIES)
+    c\etype = ENTITY_COPTER
     c\tank = 5000
-    
+    c\z = 40
+    // Create test copter
+    'c.ENTITIES = New(ENTITIES)
+    'c\etype = ENTITY_COPTER
+    'c\tank = 5000
+    'c\z = 60
+    'c\tx = 30
     Repeat
         'SetWindow "FPS:" + FPS()
-        DrawToImage gbuffer
+        DrawToImage gBuffer
         Cls
-        If KeyDown(28) Then
-            GrowTrees()
-        EndIf
         t# = (Timer() - lastUpdate) / 1000.0
         lastUpdate = Timer()
         UpdateFireSpreading(t#, part)
@@ -85,10 +89,10 @@ main:
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
-				If copterx=tx Then //Or copterx=tx+1 
-					Gosub updateParticles
-					Gosub drawcopter
-				EndIf
+				'If copterx=tx Then //Or copterx=tx+1 
+				'	Gosub updateParticles
+				'	Gosub drawcopter
+				'EndIf
 			Next tx
 			cx = cx - SW*1.5 : cy = cy - SH*1.5
 			//DrawImage gui,300,250
@@ -102,14 +106,51 @@ main:
 					Gosub drawTile
 				Next ty
 				ttx=tx
-				If Int(copterx)=tx Then //Or Int(copterx)=tx
-					Gosub updateParticles
-					Gosub drawcopter
-				EndIf
+                For c.ENTITIES = Each ENTITIES
+                    If c\etype = ENTITY_COPTER And RoundUp(c\tx) = tx Then
+                        a = (GetAngle(c\tx - c\xv, c\ty - c\yv, c\tx, c\ty) - 45) Mod 360
+                        If a > 0 And a < 90 Then dir = 0
+                        If a > 90 And a < 180 Then dir = 1
+                        If a > 180 And a < 270 Then dir = 2
+                        If a > 270 And a < 360 Then dir = 3
+                        
+                        tx = c\tx
+                        ty = c\ty
+                        Gosub kamera
+                        DrawImage copter(dir, 0), sx - TW / 2, sy - ImageHeight(copter(dir, 0))
+                        DrawImage copter(dir, 1), sx - TW / 2, -c\z + sy - ImageHeight(copter(dir, 1))                        
+                    EndIf
+                Next c
 				tx=ttx
 			Next tx
+            
+            Gosub updateParticles
+            
 			DrawImage gui,0,0
 		EndIf
+        
+        If MouseHit(1) Then
+            wp.WAYPOINTS = New(WAYPOINTS)        
+            sx = MouseX() / 4.0
+            sy = MouseY() / 4.0
+            Gosub inversekamera
+            wp\tx = tx
+            wp\ty = ty
+            wp\n = NULL
+            
+            For c.ENTITIES = Each ENTITIES
+                If c\etype = ENTITY_COPTER Then
+                    c\wayPoint = ConvertToInteger(wp)
+                EndIf
+            Next c
+        EndIf
+        
+        For wp.WAYPOINTS = Each WAYPOINTS
+            tx = wp\tx
+            ty = wp\ty
+            Gosub kamera
+            Box sx,sy,4,4,1
+        Next wp
         
         DrawToScreen
         If doublePx Then Gosub scalebuffer
@@ -120,6 +161,7 @@ main:
 Return
 
 updatecopter:
+    remstart
 	tmpcopterx# = copterx
 	tmpcoptery# = coptery
 
@@ -145,33 +187,64 @@ updatecopter:
             makeparticle(PARTICLE_FIRE,copterx+1,coptery,copterz+10,0,0,-40.0,0,0,-40,0,copterz/30*550)
         Next i
     EndIf
+    remend
+    For c.ENTITIES = Each ENTITIES
+        If c\etype = ENTITY_COPTER Then
+            // Move copter up and down
+            c\z = c\z + Sin(Timer() / 10) * 0.4
+            // Get waypoint
+            wp.WAYPOINTS = ConvertToType(c\wayPoint)
+            If wp <> NULL Then
+                follow# = 0.04
+                tmpx = c\tx
+                tmpy = c\ty
+                // Move to waypoint
+                c\tx = c\tx * (1 - follow) + wp\tx * follow
+                c\ty = c\ty * (1 - follow) + wp\ty * follow
+                // Calculate speed
+                c\xv = c\tx - tmpx
+                c\yv = c\ty - tmpy
+            EndIf
+            
+            If  c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
+                If heat(Int(c\tx), Int(c\ty)) > 20 Then
+                    For i=0 To 10
+                        makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10, c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550)
+                    Next i
+                EndIf
+            EndIf
+            
+        EndIf
+    Next c
 Return
 
 updateParticles:
 	For p.ENTITIES = Each ENTITIES
-		txf# = p\tx
-		tyf# = p\ty
-		Gosub kamerafloat
-		DrawImage pImgs(p\t, p\f), sxf, syf-p\z
-		p\tx = p\tx + (p\xv + WIND_SPEED_X*0.2) * t#
-		p\ty = p\ty + (p\yv + WIND_SPEED_Y*0.2) * t#
-		p\z = p\z + p\zv * t#
-		p\xv = p\xv + p\xa * t#
-		p\yv = p\yv + p\ya * t#
-		p\zv = p\zv + p\za * t#
-		p\f = p\f + 3
-		If p\f > pFrames Then p\f = 0
-		If Timer() > p\st + p\l Then
-			If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
-                Select p\t
-                    Case 0'PARTICLE_FIRE
-                        heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) + 15
-                    Case 2'PARTICLE_FOAM
-                        heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) - 15
-                EndSelect
-			EndIf
-			Delete p
-		EndIf
+        If p\etype = ENTITY_PARTICLE Then
+            txf# = p\tx
+            tyf# = p\ty
+            Gosub kamerafloat
+            DrawImage pImgs(p\t, p\f), sxf, syf-p\z
+            p\tx = p\tx + (p\xv + WIND_SPEED_X*0.2) * t#
+            p\ty = p\ty + (p\yv + WIND_SPEED_Y*0.2) * t#
+            p\z = p\z + p\zv * t#
+            p\xv = p\xv + p\xa * t#
+            p\yv = p\yv + p\ya * t#
+            p\zv = p\zv + p\za * t#
+            p\f = p\f + 3
+            If p\f > pFrames Then p\f = 0
+            If Timer() > p\st + p\l Then
+                If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
+                    Select p\t
+                        Case 0'PARTICLE_FIRE
+                            heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) + 15
+                        Case 2'PARTICLE_FOAM
+                            heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) - 15
+                    EndSelect
+                EndIf
+                Delete p
+            EndIf
+        EndIf
 	Next p
 Return
 
