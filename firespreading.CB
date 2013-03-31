@@ -54,6 +54,8 @@ Function UpdateFireSpreading(t#, part)
 					burnTimes(x,y) = BURN_TIME_START
 				EndIf
 				heat(x,y) = heat(x,y) - heat(x,y) * HEAT_DISPENCE * t#
+			Else
+				heat(x,y) = heat(x,y) - heat(x,y) * DRYING_MULT * t#
 			EndIf
 		Next y
 	Next x
