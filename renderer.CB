@@ -8,12 +8,16 @@ Type particle
     Field t
     Field x
     Field y
+	Field z
     Field xv As Float
     Field yv As Float
+    Field yz As Float
     Field xa As Float
     Field ya As Float
+    Field yz As Float
     Field f
-    Field l
+    Field st
+	Field l
 EndType
 
 Dim Tiles(TILE_COUNT,4)
@@ -43,6 +47,25 @@ For i=0 To 32
 	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
     pImgs(2,i)=j
 Next i
+
+Function makeparticle(t,x,y,z,xv,yv,zv,xa,ya,za,f,l)
+	remstart
+	qp.particle = New(particle)
+	qp\t=t
+	qp\x=x
+	qp\y=y
+	qp\z=z
+	qp\xv=xv
+	qp\yv=yv
+	qp\zv=zv
+	qp\xa=xa
+	qp\ya=ya
+	qp\za=za
+	qp\f=f
+	qp\l=l
+	qp\st=Timer()
+	remend
+EndFunction
 
 cx = 200
 cy = 50

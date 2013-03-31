@@ -75,19 +75,24 @@ main:
 			Next tx
 			DrawImage gui,0,0
 		EndIf
-		
-		
+		remstart
         // Update particles
         For p.particle = Each particle
-            DrawImage pImgs(p\t, p\f), p\x, p\y
+
+			tx=p\x
+			ty=p\y
+			Gosub kamera
+            DrawImage pImgs(p\t, p\f), sx, sy
             p\x + p\xv
             p\y + p\yv
+			p\z + p\yz
             p\xv + p\xa
             p\yv + p\ya
+			p\zv + p\za
             p\l - 1
             If p\l < 1 Then Delete p
         Next p
-
+remend
         DrawToScreen
         If doublePx Then Gosub scalebuffer
         DrawImage gbuffer,0,0
@@ -100,9 +105,12 @@ updatecopter:
 	sx=MouseX()/4.0
 	sy=MouseY()/4.0
 	Gosub inversekamera
-	follow#=0.05
+	follow#=0.03
 	copterx=copterx*(1-follow)+(tx-1)*follow
 	coptery=coptery*(1-follow)+(ty+2)*follow
+	If GetMouse()=1 Then
+		makeparticle(2,tx,ty,0,0,0,0,0,0,-0.1,0,100)
+	EndIf
 Return
 
 scaleBuffer:
