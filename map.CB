@@ -15,10 +15,10 @@ Const TILE_BURNED_GRASS = 9
 Const TILE_COUNT = 9
 
 
-Const HEAT_TRANS = 0.055
+Const HEAT_TRANS = 0.058
 Const MAX_HEAT = 1000
 Const MIN_HEAT = 0.1
-Const HEAT_DISPENCE = 0.6
+Const HEAT_DISPENCE = 0.61
 Const RANDOM_HEAT_CHANCE = 0.015
 Const BURN_TIME_START = 0.001
 
@@ -47,7 +47,7 @@ tileBurnTimes(TILE_BURNED_GRASS) = 0
 tileHeatValues(TILE_EMPTY) = 0
 tileHeatValues(TILE_ROAD) = 0
 tileHeatValues(TILE_WATER) = 0.0
-tileHeatValues(TILE_GRASS) = 60
+tileHeatValues(TILE_GRASS) = 70
 tileHeatValues(TILE_HAY) = 100
 tileHeatValues(TILE_TREE1) = 150
 tileHeatValues(TILE_TREE2) = 200
@@ -58,11 +58,11 @@ tileHeatValues(TILE_BURNED_GRASS) = 0
 tileFlamingHeatValue(TILE_EMPTY) = 0
 tileFlamingHeatValue(TILE_ROAD) = 0
 tileFlamingHeatValue(TILE_WATER) = 0
-tileFlamingHeatValue(TILE_GRASS) = 50
-tileFlamingHeatValue(TILE_HAY) = 25
-tileFlamingHeatValue(TILE_TREE1) = 100
-tileFlamingHeatValue(TILE_TREE2) = 125
-tileFlamingHeatValue(TILE_TREE3) = 150
+tileFlamingHeatValue(TILE_GRASS) = 40
+tileFlamingHeatValue(TILE_HAY) = 20
+tileFlamingHeatValue(TILE_TREE1) = 80
+tileFlamingHeatValue(TILE_TREE2) = 115
+tileFlamingHeatValue(TILE_TREE3) = 140
 tileFlamingHeatValue(TILE_BURNED_TREE) = 0
 tileFlamingHeatValue(TILE_BURNED_GRASS) = 0
 

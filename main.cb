@@ -46,8 +46,8 @@ main:
 		doublePx = Not KeyDown(cbkeyZ)
 		If doublePx Then Gosub updatecopter
 		
-        cx=cx+(LeftKey()-RightKey())*4
-        cy=cy-(DownKey()-UpKey())*4
+        cx=cx+(LeftKey()-RightKey())*4 * (1 + (Not doublePx) * 3)
+        cy=cy-(DownKey()-UpKey())*4 * (1 + (Not doublePx) * 3)
 
 		xlimit=-cx/16-cy/8
 		ylimit=cx/16-cy/8
@@ -131,7 +131,7 @@ updateParticles:
 		If Timer() > p\st + p\l Then
 			If  p\tx > 0 And p\ty > 0 Then
 				heat(p\tx,p\ty) = heat(p\tx,p\ty) - 4
-				If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
+				//If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
 			EndIf
 			Delete p
 		EndIf
