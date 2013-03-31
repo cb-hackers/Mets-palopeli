@@ -69,8 +69,8 @@ main:
 		doublePx = Not KeyDown(cbkeyZ)
 		If doublePx Then Gosub updatecopter
 		
-        cx=cx+((LeftKey() Or KeyDown(cbkeya))-(RightKey() Or KeyDown(cbkeyd)))*4
-        cy=cy-((DownKey() Or KeyDown(cbkeys))-(UpKey() Or KeyDown(cbkeyw)))*4
+        cx=cx+((LeftKey() Or KeyDown(cbkeya))-(RightKey() Or KeyDown(cbkeyd)))*4 * (1 + (Not doublePx) * 3)
+        cy=cy-((DownKey() Or KeyDown(cbkeys))-(UpKey() Or KeyDown(cbkeyw)))*4 * (1 + (Not doublePx) * 3)
 
 		xlimit=-cx/16-cy/8
 		ylimit=cx/16-cy/8
@@ -80,7 +80,7 @@ main:
 			cx = cx + SW*1.5 : cy = cy + SH*1.5
 			For tx=0 To MAP_WIDTH-1
 				For ty=0 To MAP_HEIGHT-1
-					burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/200.0,1)
+					burning=Min(Max(0,heat(tx,ty)*(burnTimes(tx,ty)>0)/200.0),1)
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
@@ -94,7 +94,7 @@ main:
 		Else	
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
 				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
-					burning=Min(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,1)
+					burning=Min(Max(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,0),1)
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
@@ -155,7 +155,7 @@ updateParticles:
 		If Timer() > p\st + p\l Then
 			If  p\tx > 0 And p\ty > 0 Then
 				heat(p\tx,p\ty) = heat(p\tx,p\ty) - 4
-				If heat(p\tx,p\ty) < 0 And p\tx>=0 And p\ty>=0 And p\tx<MAP_WIDTH And p\ty<MAP_HEIGHT Then heat(p\tx,p\ty) = 0
+				//If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
 			EndIf
 			Delete p
 		EndIf

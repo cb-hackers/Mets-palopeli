@@ -56,11 +56,16 @@ cy = 50
 
 drawTile:
 	Gosub kamera
-	If Tiles(id,burning) > 0 Then DrawImage Tiles(id,burning),sx,sy-ImageHeight(Tiles(id,burning))
+	
 	istree=id<6 And id>2
-	If (Sqrt(heat(tx,ty))+istree*5)>22 Then DrawImage flames(1,Rand(3)),sx,sy-ImageHeight(flames(1,0))
-	If (Sqrt(heat(tx,ty))+(id=TILE_HAY)*10)>18 Then DrawImage flames(2,Rand(3)),sx,sy-ImageHeight(flames(2,0))
-	If Rand(Sqrt(heat(tx,ty)))>7 Then DrawImage flames(0,Rand(3)),sx,sy-ImageHeight(flames(0,0))
+	If heat(tx,ty) > -5 Then
+			If Tiles(id,burning) > 0 Then DrawImage Tiles(id,burning),sx,sy-ImageHeight(Tiles(id,burning))
+			If (Sqrt(heat(tx,ty))+istree*5)>22 Then DrawImage flames(1,Rand(3)),sx,sy-ImageHeight(flames(1,0))
+			If (Sqrt(heat(tx,ty))+(id=TILE_HAY)*10)>18 Then DrawImage flames(2,Rand(3)),sx,sy-ImageHeight(flames(2,0))
+			If Rand(Sqrt(heat(tx,ty)))>7 Then DrawImage flames(0,Rand(3)),sx,sy-ImageHeight(flames(0,0))
+		Else
+			If Tiles(id,2) > 0 Then DrawImage Tiles(id,2),sx,sy-ImageHeight(Tiles(id,2))
+	EndIf
 Return
 
 kamera:
@@ -138,31 +143,50 @@ EndFunction
 Function loadtiles()
 	//Ground
 	img=LoadImage("gfx/perusmaa.png")
+	img2=LoadImage("gfx/perusmaa_kaste.png")
 	smoldering=maketile(img,6)
 	Tiles(TILE_EMPTY,0)=maketile(img,0)
 	Tiles(TILE_EMPTY,1)=smoldering
+	Tiles(TILE_EMPTY,2)=maketile(img2,0)
+	
 	Tiles(TILE_GRASS,0)=maketile(img,1)
 	Tiles(TILE_GRASS,1)=smoldering
+	Tiles(TILE_GRASS,2)=maketile(img2,1)
+	
 	Tiles(TILE_HAY,0)=maketile(img,2)
+	'smoldering defined later
+	Tiles(TILE_HAY,2)=maketile(img2,2)
+	
 	//Tiles(TILE_HAY,1)=smoldering
 	Tiles(TILE_BURNED_GRASS,0)=maketile(img,5)
 	Tiles(TILE_BURNED_GRASS,1)=smoldering
+	Tiles(TILE_BURNED_GRASS,2)=maketile(img2,5)
 	
 	Tiles(TILE_ROAD,0)=maketile(img,3)
 	Tiles(TILE_ROAD,1)=maketile(img,3)
+	Tiles(TILE_ROAD,2)=maketile(img2,3)
+	
 	Tiles(TILE_WATER,0)=maketile(img,4)
 	Tiles(TILE_WATER,1)=maketile(img,4)
+	Tiles(TILE_WATER,2)=maketile(img,4)
+	
 	//Trees
 	img=LoadImage("gfx/puu_isokuusi.png")
 	Tiles(TILE_TREE1,0)=maketile(img,0)	
 	Tiles(TILE_TREE1,1)=maketile(img,1)	
+	
 	Tiles(TILE_BURNED_TREE,0)=maketile(img,3)	
 	Tiles(TILE_BURNED_TREE,1)=maketile(img,4)
+	
 	Tiles(TILE_HAY,1)=maketile(img,4)
+	
 	img=LoadImage("gfx/puu_isokuusi2.png")
+	
 	Tiles(TILE_TREE2,0)=maketile(img,0)
 	Tiles(TILE_TREE2,1)=maketile(img,1)	
+	
 	img=LoadImage("gfx/puu_isokuusi3.png")
+	
 	Tiles(TILE_TREE3,0)=maketile(img,0)
 	Tiles(TILE_TREE3,1)=maketile(img,1)	
 	
