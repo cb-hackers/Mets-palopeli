@@ -1,4 +1,4 @@
-SetWindow "Mets-palopeli ALPHA v0.0.0 PREVIEW TECH DEMO"
+SetWindow "Mets-palopeli ALPHA v0.0.1"
 
 menuBg = LoadImage("gfx/menu.png")
 
@@ -52,8 +52,6 @@ menu:
                 End
         EndSelect
     EndIf
-
-    
 Return
 
 credits:
@@ -65,13 +63,3 @@ credits:
     credit = credit + (t2 - lastT2) / 1000.0 * CREDIT_TIME
     If credit > CREDIT_COUNT Then credit = 0
 Return
-
-'testloop
-'Repeat
-'    Gosub menu
-'	Gosub scaleBuffer
-'    DrawToScreen
-'	DrawImage gBuffer,0,0
-'	DrawScreen
-'Forever
-    
