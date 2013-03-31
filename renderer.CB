@@ -16,6 +16,7 @@ Type ENTITIES
 	Field z As Float
     Field l
     Field wayPoint
+    Field start
     // Particles
     Field xv As Float
     Field yv As Float
@@ -24,15 +25,16 @@ Type ENTITIES
     Field ya As Float
     Field za As Float
     Field f
-    Field st
     // Copter
-    Field tank
+    Field tank#
 EndType
 
 Type WAYPOINTS
     Field tx
     Field ty
     Field n
+    Field lx
+    Field ly
 EndType
 
 Dim Tiles(TILE_COUNT,4)
@@ -48,6 +50,9 @@ Const PARTICLE_FIRE = 0
 Const PARTICLE_SMOKE = 1
 Const PARTICLE_FOAM = 2
 Dim pColors(2,pFrames)
+
+Const COPTER_FUEL_USAGE = 1.0
+Const COPTER_SPEED = 10.0
 
 pImg = LoadImage("gfx/tuli_partikkeli.png")
 DrawToImage pImg
@@ -146,7 +151,7 @@ Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
 	p\za=za
 	p\f=f
 	p\l=l
-	p\st=Timer()
+	p\start=Timer()
 EndFunction
 
 Function loadcopter()
