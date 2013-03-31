@@ -21,6 +21,7 @@ coptery#=0
 'copterz#=52
 
 main:
+    // Start by loading and populating the map with trees.
     GenerateMap("maps/testi.png", 0)
     Color cbwhite
     DrawToScreen
@@ -30,7 +31,7 @@ main:
     For i=0 To Int(iterations)
         GrowTrees()
         // Render loading animation
-        If i Mod 15 = 1 Then
+        If i Mod 10 = 1 Then
             cx = cx + SW*1.5 : cy = cy + SH*1.5
             For tx=0 To MAP_WIDTH-1
                 For ty=0 To MAP_HEIGHT-1
@@ -44,6 +45,7 @@ main:
             Box 399-(i/iterations*800)/2,289,i/iterations*800+2,22,1
             Color cbwhite
             CenterText 400,314,"Growing trees..."
+            Color 255-i/iterations*200,255,255
             Box 400-(i/iterations*800)/2,290,i/iterations*800,20,1
             DrawScreen
         EndIf
