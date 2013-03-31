@@ -93,11 +93,11 @@ drawcopter:
 		tx=copterx#
 		ty=coptery#
 		Gosub kamera
-		DrawImage copter(0),sx,sy-imageheight(copter(0))
+		DrawImage copter(0),sx+8,sy-ImageHeight(copter(0))
 Return 
 
 Function loadcopter()
-	img=LoadImage("gfx/lollerkopter.png")
+	img=LoadImage("gfx/kopteri_varjo.png")
 	makecopter(img)
 EndFunction
 

@@ -106,8 +106,8 @@ updatecopter:
 	sy=MouseY()/4.0
 	Gosub inversekamera
 	follow#=0.03
-	copterx=copterx*(1-follow)+(tx-1)*follow
-	coptery=coptery*(1-follow)+(ty+2)*follow
+	copterx=copterx*(1-follow)+(tx)*follow
+	coptery=coptery*(1-follow)+(ty+3)*follow
 	If GetMouse()=1 Then
 		makeparticle(2,tx,ty,0,0,0,0,0,0,-0.1,0,100)
 	EndIf
