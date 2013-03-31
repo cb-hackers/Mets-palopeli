@@ -230,30 +230,39 @@ updatecopter:
             wp.WAYPOINTS = ConvertToType(c\wayPoint)
             If wp <> NULL Then
                 follow# = 0.04
-                tmpx = c\tx
-                tmpy = c\ty
+                tmpx# = c\tx
+                tmpy# = c\ty
+				s# = COPTER_SPEED * t#
                 // WP not reached
                 If Not c\start Then
                     // Move to waypoint
-                    c\tx = c\tx * (1 - follow) + wp\tx * follow
-                    c\ty = c\ty * (1 - follow) + wp\ty * follow
+					ang# = GetAngle(c\tx, c\ty, wp\tx, wp\ty) 
                     // Check distance
-                    d = Distance(c\tx, c\ty, wp\tx, wp\ty)
-                    If d <= 1 Then
-                        c\start = True
-                    EndIf
+                    d# = Distance(c\tx, c\ty, wp\tx, wp\ty)
+					If d < s# Then
+						c\tx# = c\tx# + Cos(ang#) * d#
+						c\ty# = c\ty# - Sin(ang#) * d#
+						c\start = True
+					Else
+						c\tx# = c\tx# + Cos(ang#) * s#
+						c\ty# = c\ty# - Sin(ang#) * s#
+					EndIf
                 Else
                     // Waypoint reached
                     // Move to end of waypoint line
-                    c\tx = c\tx * (1 - follow) + wp\lx * follow
-                    c\ty = c\ty * (1 - follow) + wp\ly * follow
+					ang# = GetAngle(c\tx, c\ty, wp\lx, wp\ly) 
                     // Check distance
-                    d = Distance(c\tx, c\ty, wp\lx, wp\ly)
-                    If d <= 1 Then
-                        // Change to next waypoint
-                        c\start = False
+                    d# = Distance(c\tx, c\ty, wp\lx, wp\ly)
+					If d < s# Then
+						c\tx# = c\tx# + Cos(ang#) * d#
+						c\ty# = c\ty# - Sin(ang#) * d#
+						
+						c\start = False
                         If wp\n Then c\wayPoint = wp\n
-                    EndIf
+					Else
+						c\tx# = c\tx# + Cos(ang#) * s#
+						c\ty# = c\ty# - Sin(ang#) * s#
+					EndIf
                 EndIf
                 // Calculate speed
                 c\xv = c\tx - tmpx
@@ -262,6 +271,7 @@ updatecopter:
             
             If  c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
                 If c\start Then
+					c\tank# = c\tank - t# * COPTER_FUEL_USAGE
                     For i=0 To 10
                         makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10, c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550)
                     Next i

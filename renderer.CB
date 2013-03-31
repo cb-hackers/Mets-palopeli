@@ -26,7 +26,7 @@ Type ENTITIES
     Field za As Float
     Field f
     // Copter
-    Field tank
+    Field tank#
 EndType
 
 Type WAYPOINTS
@@ -50,6 +50,9 @@ Const PARTICLE_FIRE = 0
 Const PARTICLE_SMOKE = 1
 Const PARTICLE_FOAM = 2
 Dim pColors(2,pFrames)
+
+Const COPTER_FUEL_USAGE = 1.0
+Const COPTER_SPEED = 10.0
 
 pImg = LoadImage("gfx/tuli_partikkeli.png")
 DrawToImage pImg
