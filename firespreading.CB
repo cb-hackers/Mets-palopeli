@@ -1,4 +1,4 @@
-Const PART_DIV = 6
+Const PART_DIV = 4
 
 Function UpdateFireSpreading(t#, part)
 	part = part Mod (PART_DIV*PART_DIV)
@@ -54,8 +54,9 @@ Function UpdateFireSpreading(t#, part)
 					burnTimes(x,y) = BURN_TIME_START
 				EndIf
 				heat(x,y) = heat(x,y) - heat(x,y) * HEAT_DISPENCE * t#
-			Else
+			ElseIf heat(x,y) < 0
 				heat(x,y) = heat(x,y) - heat(x,y) * DRYING_MULT * t#
+				SetWindow "Heat("+x+", "+y+") = "+ heat(x,y)
 			EndIf
 		Next y
 	Next x

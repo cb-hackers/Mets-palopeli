@@ -131,7 +131,7 @@ updateParticles:
 		p\f = p\f + 3
 		If p\f > pFrames Then p\f = 0
 		If Timer() > p\st + p\l Then
-			If  p\tx > 0 And p\ty > 0 Then
+			If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
 				heat(p\tx,p\ty) = heat(p\tx,p\ty) - 4
 				//If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
 			EndIf
