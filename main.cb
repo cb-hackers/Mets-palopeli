@@ -124,8 +124,6 @@ main:
                 Next c
 				tx=ttx
 			Next tx
-			Gosub drawgui
-            Gosub updateParticles
 		EndIf
         
         If MouseHit(1) Then
@@ -183,7 +181,11 @@ main:
                 If c\etype = ENTITY_COPTER Then c\wayPoint = 0 : c\start = 0
             Next c
         EndIf
-        
+
+		If doublePx Then
+			Gosub updateParticles
+			Gosub drawgui
+        EndIf
         DrawToScreen
         If doublePx Then Gosub scalebuffer
         DrawImage gbuffer,0,0
