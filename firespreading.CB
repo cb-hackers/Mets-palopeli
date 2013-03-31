@@ -1,4 +1,4 @@
-Const PART_DIV = 4
+Const PART_DIV = 6
 
 Function UpdateFireSpreading(t#, part)
 	part = part Mod (PART_DIV*PART_DIV)

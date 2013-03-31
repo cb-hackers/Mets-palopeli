@@ -4,17 +4,19 @@ Const SW=200
 Const SH=150
 SCREEN SW*4,SH*4
 
-Type particle
+Type PARTICLES
     Field t
-    Field x
-    Field y
-	Field z
+    Field tx
+    Field ty
+    Field x As Float
+    Field y As Float
+	Field z As Float
     Field xv As Float
     Field yv As Float
-    Field yz As Float
+    Field zv As Float
     Field xa As Float
     Field ya As Float
-    Field yz As Float
+    Field za As Float
     Field f
     Field st
 	Field l
@@ -28,44 +30,26 @@ loadflames()
 loadcopter()
 
 // Load particle images
-Dim pImgs(2,32)
+Const pFrames = 32
+Dim pImgs(2,pFrames)
 pImg = LoadImage("gfx/tuli_partikkeli.png")
-For i=0 To 32
+For i=0 To pFrames
 	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
     pImgs(0,i)=j
 Next i
 pImg = LoadImage("gfx/savu_partikkeli.png")
-For i=0 To 32
+For i=0 To pFrames
 	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
     pImgs(1,i)=j
 Next i
 pImg = LoadImage("gfx/vaahto_partikkeli.png")
-For i=0 To 32
+For i=0 To pFrames
 	j=MakeImage(1,1)
-	CopyBox frame,0,1,1,0,0,Image(pImg),Image(j)
+	CopyBox i,0,1,1,0,0,Image(pImg),Image(j)
     pImgs(2,i)=j
 Next i
-
-Function makeparticle(t,x,y,z,xv,yv,zv,xa,ya,za,f,l)
-	remstart
-	qp.particle = New(particle)
-	qp\t=t
-	qp\x=x
-	qp\y=y
-	qp\z=z
-	qp\xv=xv
-	qp\yv=yv
-	qp\zv=zv
-	qp\xa=xa
-	qp\ya=ya
-	qp\za=za
-	qp\f=f
-	qp\l=l
-	qp\st=Timer()
-	remend
-EndFunction
 
 cx = 200
 cy = 50
@@ -80,21 +64,41 @@ drawTile:
 Return
 
 kamera:
-	sx=(tx-ty)/2.0*TW	+cx
-	sy=(tx+ty)/2.0*TH	+cy
+	sx=(tx-(ty+2))/2.0*TW	+cx + TW * 0.5
+	sy=(tx+(ty+2))/2.0*TH	+cy
 Return
 
 inversekamera:
 	tx = (sx*TH+sy*TW-cx*TH-cy*TW)/(TW*TH)
 	ty = (-sx*TH+sy*TW+cx*TH-cy*TW)/(TW*TH)
+
 Return
 
 drawcopter:
 		tx=copterx#
 		ty=coptery#
 		Gosub kamera
-		DrawImage copter(0),sx+8,sy-ImageHeight(copter(0))
+		DrawImage copter(0),sx-TW/2,sy-ImageHeight(copter(0))
 Return 
+
+Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
+    p.PARTICLES = New(PARTICLES)
+    p\t=t
+	p\tx=x
+	p\ty=y
+    p\x = TW/2 + Rand(-3,3)
+    p\y = Rand(-3,3)
+	p\z=z + Rand(-3,3)
+	p\xv=xv + Rnd(-2,2)
+	p\yv=yv + Rnd(-2,2)
+	p\zv=zv
+	p\xa=xa + Rnd(-35,35)
+	p\ya=ya + Rnd(-35,35)
+	p\za=za
+	p\f=f
+	p\l=l
+	p\st=Timer()
+EndFunction
 
 Function loadcopter()
 	img=LoadImage("gfx/kopteri_varjo.png")
