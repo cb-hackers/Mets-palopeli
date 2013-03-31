@@ -75,6 +75,8 @@ main:
         lastUpdate = Timer()
         UpdateFireSpreading(t#, part)
         part + 1
+		
+		Gosub updategui
 
 		doublePx = Not KeyDown(cbkeyZ)
 		If doublePx Then Gosub updatecopter
