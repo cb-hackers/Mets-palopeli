@@ -64,20 +64,21 @@ drawTile:
 Return
 
 kamera:
-	sx=(tx-ty)/2.0*TW	+cx
-	sy=(tx+ty)/2.0*TH	+cy
+	sx=(tx-(ty+2))/2.0*TW	+cx + TW * 0.5
+	sy=(tx+(ty+2))/2.0*TH	+cy
 Return
 
 inversekamera:
 	tx = (sx*TH+sy*TW-cx*TH-cy*TW)/(TW*TH)
 	ty = (-sx*TH+sy*TW+cx*TH-cy*TW)/(TW*TH)
+
 Return
 
 drawcopter:
 		tx=copterx#
 		ty=coptery#
 		Gosub kamera
-		DrawImage copter(0),sx,sy-imageheight(copter(0))
+		DrawImage copter(0),sx-TW/2,sy-ImageHeight(copter(0))
 Return 
 
 Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
@@ -85,14 +86,14 @@ Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
     p\t=t
 	p\tx=x
 	p\ty=y
-    p\x = 10+Rand(-5,5)
-    p\y = 4+Rand(-5,5)
-	p\z=z + Rand(-5,5)
-	p\xv=xv
-	p\yv=yv
+    p\x = TW/2 + Rand(-3,3)
+    p\y = Rand(-3,3)
+	p\z=z + Rand(-3,3)
+	p\xv=xv + Rnd(-2,2)
+	p\yv=yv + Rnd(-2,2)
 	p\zv=zv
-	p\xa=xa
-	p\ya=ya
+	p\xa=xa + Rnd(-35,35)
+	p\ya=ya + Rnd(-35,35)
 	p\za=za
 	p\f=f
 	p\l=l

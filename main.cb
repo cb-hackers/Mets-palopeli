@@ -60,7 +60,10 @@ main:
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
-				If copterx=tx Or copterx=tx+1 Then Gosub drawcopter
+				If copterx=tx Then //Or copterx=tx+1 
+					Gosub updateParticles
+					Gosub drawcopter
+				EndIf
 			Next tx
 			cx = cx - SW*1.5 : cy = cy - SH*1.5
 			//DrawImage gui,300,250
@@ -72,33 +75,15 @@ main:
 					Gosub drawTile
 				Next ty
 				ttx=tx
-				If Int(copterx)=tx-1 Or Int(copterx)=tx Then Gosub drawcopter
+				If Int(copterx)=tx Then //Or Int(copterx)=tx
+					Gosub updateParticles
+					Gosub drawcopter
+				EndIf
 				tx=ttx
 			Next tx
 			DrawImage gui,0,0
 		EndIf
-        // Update particles
-        For p.particles = Each particles
-			tx = p\tx
-			ty = p\ty
-			Gosub kamera
-            DrawImage pImgs(p\t, p\f), sx+p\x, sy+p\y-p\z
-            p\x = p\x + p\xv + WIND_SPEED_X/2
-            p\y = p\y + p\yv + WIND_SPEED_Y/2
-			p\z = p\z + p\zv
-            p\xv = p\xv + p\xa
-            p\yv = p\yv + p\ya
-			p\zv = p\zv + p\za
-            p\f = p\f + 3
-            If p\f > pFrames Then p\f = 0
-            If Timer() > p\st + p\l Then
-                If  p\tx > 0 And p\ty > 0 Then
-                    heat(p\tx,p\ty) = heat(p\tx,p\ty) - 4
-                    If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
-                EndIf
-                Delete p
-            EndIf
-        Next p
+        
         DrawToScreen
         If doublePx Then Gosub scalebuffer
         DrawImage gbuffer,0,0
@@ -111,18 +96,47 @@ updatecopter:
 	sx=MouseX()/4.0
 	sy=MouseY()/4.0
 	Gosub inversekamera
+	
 	follow#=0.05
-	copterx=copterx*(1-follow)+(tx-1)*follow
-	coptery=coptery*(1-follow)+(ty+2)*follow
+	copterx=copterx*(1-follow)+tx*follow
+	coptery=coptery*(1-follow)+ty*follow
+	
+	SetWindow "TX:" + tx + " TY:"+ty + " CX:"+copterx + " CY:"+coptery
 	If MouseDown(1) Then
         For i=0 To 10
-            makeparticle(2,copterx,coptery,50,0,0,-4.0,0,0,-1,0,400)
+            makeparticle(2,copterx,coptery,36,0,0,-40.0,0,0,-40,0,550)
         Next i
 	EndIf
     If MouseDown(2) Then
         heat(Int(copterx), Int(coptery)) = heat(Int(copterx), Int(coptery)) + 20
     EndIf
 Return
+
+updateParticles:
+	For p.particles = Each particles
+		tx = p\tx
+		ty = p\ty
+		Gosub kamera
+		DrawImage pImgs(p\t, p\f), sx+p\x, sy+p\y-p\z
+		p\x = p\x + (p\xv + WIND_SPEED_X*1.5) * t#
+		p\y = p\y + (p\yv + WIND_SPEED_Y*1.5) * t#
+		p\z = p\z + p\zv * t#
+		p\xv = p\xv + p\xa * t#
+		p\yv = p\yv + p\ya * t#
+		p\zv = p\zv + p\za * t#
+		p\f = p\f + 3
+		If p\f > pFrames Then p\f = 0
+		If Timer() > p\st + p\l Then
+			If  p\tx > 0 And p\ty > 0 Then
+				heat(p\tx,p\ty) = heat(p\tx,p\ty) - 4
+				If heat(p\tx,p\ty) < 0 Then heat(p\tx,p\ty) = 0
+			EndIf
+			Delete p
+		EndIf
+	Next p
+Return
+
+
 
 scaleBuffer:
     For sb_i=SH To 0 Step -1
