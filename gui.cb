@@ -23,6 +23,41 @@ loadguibuttons()
 
 Goto guiohi
 
+updatewaypoints:
+
+        If MouseHit(1) Then
+            If Not makingWP Then
+                wp.WAYPOINTS = New(WAYPOINTS)        
+                sx = MouseX() / 4.0
+                sy = MouseY() / 4.0
+                Gosub inversekamera
+                wp\tx = tx
+                wp\ty = ty
+                wp\n = ConvertToInteger(First(WAYPOINTS))
+                // Update waypoint
+                wpo.WAYPOINTS = Before(wp)
+                If wpo <> NULL Then
+                    wpo\n = ConvertToInteger(wp)
+                Else
+                    // No waypoints, so this is teh first one.
+                    For c.ENTITIES = Each ENTITIES
+                        If c\etype = ENTITY_COPTER Then c\wayPoint = ConvertToInteger(wp)
+                    Next c
+                EndIf
+                makingWP = ConvertToInteger(wp)
+            Else
+                wp.WAYPOINTS = ConvertToType(makingWP)
+                sx = MouseX() / 4.0
+                sy = MouseY() / 4.0
+                Gosub inversekamera
+                wp\lx = tx
+                wp\ly = ty
+                makingWP = 0
+            EndIf
+        EndIf
+Return
+
+
 updategui:
 	
 		If MouseY()>124*4 And MouseY()<140*4 And MouseX()>10*4 And MouseX()<130*4 And (MouseX()/4-10)Mod 20<16 And MouseHit(1) Then guiaction=(MouseX()/4-10)/20
