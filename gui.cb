@@ -23,7 +23,7 @@ loadguibuttons()
 Goto skipGUI
 
 updatewaypoints:
-	If MouseHit(1) And guiaction=GUI_COPTER And guisubaction2 And mouseIn(0, 0, 143*4, 124*4) Then
+	If MouseHit(1) And guiaction = GUI_COPTER And guisubaction2 And mouseIn(0, 0, 143*4, 124*4) Then
 		If Not makingWP Then
 			wp.WAYPOINTS = New(WAYPOINTS)        
 			sx = MouseX() / 4.0

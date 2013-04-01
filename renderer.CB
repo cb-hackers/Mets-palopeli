@@ -125,6 +125,16 @@ drawwaypoints:
 			a = GetAngle(sx,sy,wpx,wpy)
 			Line sx,sy,sx+Cos(a+16)*5,sy-Sin(a+16)*5
 			Line sx,sy,sx+Cos(a-16)*5,sy-Sin(a-16)*5
+		Else
+			If makingWP = ConvertToInteger(wp) Then
+				sx = MouseX() / 4
+				sy = MouseY() / 4
+				Color 219, 219, 0
+				Line sx,sy,wpx+2,wpy-1
+				a = GetAngle(sx,sy,wpx,wpy)
+				Line sx,sy,sx+Cos(a+16)*5,sy-Sin(a+16)*5
+				Line sx,sy,sx+Cos(a-16)*5,sy-Sin(a-16)*5
+			EndIf
 		EndIf
 	Next wp
 Return
