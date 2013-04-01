@@ -5,6 +5,8 @@ Include "firespreading.cb"
 
 gBuffer = MakeImage(SW*4,SH*4)
 
+'copterSoundFile = LoadSound("sfx/kopterihumina.wav")
+
 Include "gui.cb"
 
 Repeat
@@ -26,6 +28,7 @@ main:
     ClearKeys
 
     // Create test copter
+	'copterSound = PlaySound(copterSoundFile)
     c.ENTITIES = New(ENTITIES)
     c\etype = ENTITY_COPTER
     c\tank = 5000
@@ -116,6 +119,7 @@ main:
 Return
 
 updatecopter:
+	'If Not SoundPlaying(copterSound) Then copterSound = PlaySound(copterSoundFile)
     For c.ENTITIES = Each ENTITIES
         If c\etype = ENTITY_COPTER Then
             // Move copter up and down
@@ -159,7 +163,8 @@ updatecopter:
                 EndIf
                 // Calculate speed
                 c\xv = c\tx - tmpx
-                c\yv = c\ty - tmpy             
+                c\yv = c\ty - tmpy
+				'SetSound copterSound, OFF, 100, 0, 44100 + Abs(Distance(0,0,c\xv,c\yv))*10000
             EndIf
             
             If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
