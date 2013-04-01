@@ -15,7 +15,8 @@ Const GUI_WAYPOINT=7
 
 
 guiaction=0
-
+guisubaction1=0
+guisubaction2=0
 
 loadguibuttons()
 
@@ -25,7 +26,16 @@ Goto guiohi
 updategui:
 	
 		If MouseY()>124*4 And MouseY()<140*4 And MouseX()>10*4 And MouseX()<130*4 And (MouseX()/4-10)Mod 20<16 And MouseHit(1) Then guiaction=(MouseX()/4-10)/20
-	
+		If MouseX()>150*4 And MouseX()<166*4 And MouseY()>124*4 And MouseY()<140*4 And MouseHit(1) Then 
+			guisubaction2=0
+			guisubaction1=1-guisubaction1
+		EndIf
+		If MouseX()>174*4 And MouseX()<190*4 And MouseY()>124*4 And MouseY()<140*4 And MouseHit(1) Then 
+			guisubaction1=0
+			guisubaction2=1-guisubaction2
+		EndIf
+		'150,124
+		'174,124
 	
 Return
 
@@ -54,11 +64,11 @@ drawgui:
 		DrawImage guibuttons(i,i=guiaction),10+i*20,124
 	Next i
 	If guiaction=GUI_HELICOPTER Then
-		DrawImage guibuttons(GUI_EMPTY,0),150,124
-		DrawImage guibuttons(GUI_WAYPOINT,0),174,124
+		DrawImage guibuttons(GUI_EMPTY,guisubaction1),150,124
+		DrawImage guibuttons(GUI_WAYPOINT,guisubaction2),174,124
 	Else
-		DrawImage guibuttons(GUI_EMPTY,0),150,124
-		DrawImage guibuttons(GUI_EMPTY,0),174,124
+		DrawImage guibuttons(GUI_EMPTY,guisubaction1),150,124
+		DrawImage guibuttons(GUI_EMPTY,guisubaction2),174,124
 	EndIf
 Return
 
