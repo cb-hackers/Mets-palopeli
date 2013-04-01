@@ -40,9 +40,11 @@ EndType
 Dim Tiles(TILE_COUNT,4)
 Dim flames(2,4)
 Dim copter(3,1)
+Dim flags(3)
 loadtiles()
 loadflames()
 loadcopter()
+loadFlags()
 
 // Load particle images
 Const pFrames = 32
@@ -72,14 +74,11 @@ Next i
 
 DrawToScreen
 
-cx = 200
-cy = 50
-
-Goto loadingEnd
+Goto skipRendering
 
 drawLoading:
 Color cbwhite
-	render = False
+	render = True
     DrawToScreen
     iterations# = 105
     cx=100
@@ -108,35 +107,27 @@ Color cbwhite
     Next i
 Return
 
-loadingEnd:
-
 drawwaypoints:
-        Color cbwhite
-        For wp.WAYPOINTS = Each WAYPOINTS
-            tx = wp\tx
-            ty = wp\ty
-            Gosub kamera
-            wpx = sx
-            wpy = sy
-            Box sx,sy,4,4,1
-            If wp\lx And wp\ly Then
-                tx = wp\lx
-                ty = wp\ly
-                Gosub kamera
-                Line sx,sy,wpx,wpy
-            EndIf
-        Next wp
-        
-        If KeyHit(cbkeyc) Then
-            For wp.WAYPOINTS = Each WAYPOINTS
-                Delete wp
-            Next wp
-            For c.ENTITIES = Each ENTITIES
-                If c\etype = ENTITY_COPTER Then c\wayPoint = 0 : c\start = 0
-            Next c
-        EndIf
+	Color cbwhite
+	For wp.WAYPOINTS = Each WAYPOINTS
+		tx = wp\tx
+		ty = wp\ty
+		Gosub kamera
+		wpx = sx
+		wpy = sy
+		DrawImage flags(0), sx, sy - 12
+		If wp\lx <> wp\tx And wp\ly <> wp\ty Then
+			tx = wp\lx
+			ty = wp\ly
+			Gosub kamera
+			Color 219, 219, 0
+			Line sx,sy,wpx+2,wpy-1
+			a = GetAngle(sx,sy,wpx,wpy)
+			Line sx,sy,sx+Cos(a+16)*5,sy-Sin(a+16)*5
+			Line sx,sy,sx+Cos(a-16)*5,sy-Sin(a-16)*5
+		EndIf
+	Next wp
 Return
-
 
 drawTile:
 	Gosub kamera
@@ -170,23 +161,7 @@ inversekamera:
 
 Return
 
-Goto drawCopterDone
-
-drawCopter:
-	a = (GetAngle(c\tx - c\xv, c\ty - c\yv, c\tx, c\ty) - 45) Mod 360
-	If a > 0 And a < 90 Then dir = 0
-	If a > 90 And a < 180 Then dir = 1
-	If a > 180 And a < 270 Then dir = 2
-	If a > 270 And a < 360 Then dir = 3
-	
-	tx = c\tx
-	ty = c\ty
-	Gosub kamera
-	DrawImage copter(dir, 0), sx - TW / 2, sy - ImageHeight(copter(dir, 0))
-	DrawImage copter(dir, 1), sx - TW / 2, -c\z + sy - ImageHeight(copter(dir, 1))   
-Return 
-
-drawCopterDone:
+skipRendering:
 
 Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
     p.ENTITIES = New(ENTITIES)
@@ -220,7 +195,13 @@ Function loadflames()
 		flames(1,i)= maketile(img,i+4)
 		flames(2,i)= maketile(img,i+8)
 	Next i
-	
+EndFunction
+
+Function loadFlags()
+	img=LoadImage("gfx/waypoint_lippu.png")
+	For i=0 To 3
+		flags(i) = makeFlag(img,i)
+	Next i
 EndFunction
 
 Function loadtiles()
@@ -296,4 +277,12 @@ Function makecopter(img,ii)
 		copter(i,ii)=MakeImage(w,h)
 		CopyBox w*i,0,w,h,0,0,Image(img),Image(copter(i,ii))
 	Next i
-EndFunction 
+EndFunction
+
+Function makeFlag(img,frame)
+	h=ImageHeight(img)
+	i=MakeImage(12,h)
+	CopyBox frame*12,0,12,h,0,0,Image(img),Image(i)
+	Return i
+EndFunction
+

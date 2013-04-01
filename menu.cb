@@ -30,7 +30,7 @@ menu:
     
     Color cbred
     Line 143,22, 162,28
-    Text 148, -5+Rand(2), "alpha"
+    Text 148, -5+Rand(2), "ALPHA"
     
     hitx = 0
     hitNum = 0

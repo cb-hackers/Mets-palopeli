@@ -7,9 +7,12 @@
   | | | |_| | |__ | ||  _/  / _ \ | |__| (_) )\     
   |_|  \___/|____|___|_|   /_/ \_\|____|\___((_)    
 
-Generoi aluksi heinää ja puustoa sopivaksi katsomasi määrä
-painamalla enter-näppäintä. Sen jälkeen voit aloittaa tulen
-levittämisen pitämällä välilyöntiä pohjassa.
+Pelasta metsä tulipalolta! Ohjaa helikoptereita waypointeilla. 
+Alapalkista tulee ensin painaa 'waypoint' nappi pohjaan, ja tämän 
+jälkeen waypointit laitetaan hiirellä ruutuun painamalla.
+Voit lisätä helikopterin valitsemalla helikopterin ja painamalla kutsumisnappia
+
+wasd/nuolet - liikkuminen
 
 01011010
 00100000
@@ -25,5 +28,5 @@ levittämisen pitämällä välilyöntiä pohjassa.
 Tekijät:
 - Latexi95
 - Wing
-- Tuhoojabotti
+- tuhoojabotti
 - Atomim

@@ -20,57 +20,65 @@ guisubaction2=0
 
 loadguibuttons()
 
-
-Goto guiohi
+Goto skipGUI
 
 updatewaypoints:
-        If MouseHit(1) Then
-            If Not makingWP Then
-                wp.WAYPOINTS = New(WAYPOINTS)        
-                sx = MouseX() / 4.0
-                sy = MouseY() / 4.0
-                Gosub inversekamera
-                wp\tx = tx
-                wp\ty = ty
-                wp\n = ConvertToInteger(First(WAYPOINTS))
-                // Update waypoint
-                wpo.WAYPOINTS = Before(wp)
-                If wpo <> NULL Then
-                    wpo\n = ConvertToInteger(wp)
-                Else
-                    // No waypoints, so this is teh first one.
-                    For c.ENTITIES = Each ENTITIES
-                        If c\etype = ENTITY_COPTER Then c\wayPoint = ConvertToInteger(wp)
-                    Next c
-                EndIf
-                makingWP = ConvertToInteger(wp)
-            Else
-                wp.WAYPOINTS = ConvertToType(makingWP)
-                sx = MouseX() / 4.0
-                sy = MouseY() / 4.0
-                Gosub inversekamera
-                wp\lx = tx
-                wp\ly = ty
-                makingWP = 0
-            EndIf
-        EndIf
+	If MouseHit(1) And guiaction=GUI_COPTER And guisubaction2 And mouseIn(0, 0, 143*4, 124*4) Then
+		If Not makingWP Then
+			wp.WAYPOINTS = New(WAYPOINTS)        
+			sx = MouseX() / 4.0
+			sy = MouseY() / 4.0
+			Gosub inversekamera
+			wp\tx = tx
+			wp\ty = ty
+			wp\lx = tx
+			wp\ly = ty
+			wp\n = ConvertToInteger(First(WAYPOINTS))
+			// Update waypoint
+			wpo.WAYPOINTS = Before(wp)
+			If wpo <> NULL Then
+				wpo\n = ConvertToInteger(wp)
+			Else
+				// No waypoints, so this is teh first one.
+				For c.ENTITIES = Each ENTITIES
+					If c\etype = ENTITY_COPTER Then c\wayPoint = ConvertToInteger(wp)
+				Next c
+			EndIf
+			makingWP = ConvertToInteger(wp)
+		Else
+			wp.WAYPOINTS = ConvertToType(makingWP)
+			sx = MouseX() / 4.0
+			sy = MouseY() / 4.0
+			Gosub inversekamera
+			wp\lx = tx
+			wp\ly = ty
+			makingWP = 0
+			'guisubaction2 = 0 // Reset wp button
+		EndIf
+	EndIf
 Return
 
-
 updategui:
-	
-		If MouseY()>124*4 And MouseY()<140*4 And MouseX()>10*4 And MouseX()<130*4 And (MouseX()/4-10)Mod 20<16 And MouseHit(1) Then guiaction=(MouseX()/4-10)/20
-		If MouseX()>150*4 And MouseX()<166*4 And MouseY()>124*4 And MouseY()<140*4 And MouseHit(1) Then 
-			guisubaction2=0
-			guisubaction1=1-guisubaction1
-		EndIf
-		If MouseX()>174*4 And MouseX()<190*4 And MouseY()>124*4 And MouseY()<140*4 And MouseHit(1) Then 
-			guisubaction1=0
-			guisubaction2=1-guisubaction2
-		EndIf
-		'150,124
-		'174,124
-	
+	If MouseY()>124*4 And MouseY()<140*4 And MouseX()>10*4 And MouseX()<130*4 And (MouseX()/4-10)Mod 20<16 And MouseHit(1) Then guiaction=(MouseX()/4-10)/20
+	'If MouseX()>150*4 And MouseX()<166*4 And MouseY()>124*4 And MouseY()<140*4 And MouseHit(1) Then 
+	If mouseIn(150*4, 124*4, 64, 64) And MouseHit(1) Then
+		guisubaction2=0
+		guisubaction1=1-guisubaction1
+	EndIf
+	If mouseIn(174*4, 124*4, 64, 64) And MouseHit(1) Then
+		guisubaction1=0
+		guisubaction2=1-guisubaction2
+	EndIf
+
+	If guiaction = GUI_DELETE And MouseUp(1) Then
+		For wp.WAYPOINTS = Each WAYPOINTS
+			Delete wp
+		Next wp
+		For c.ENTITIES = Each ENTITIES
+			If c\etype = ENTITY_COPTER Then c\wayPoint = 0 : c\start = 0
+		Next c
+		guiaction = 0
+	EndIf
 Return
 
 drawgui:
@@ -106,7 +114,7 @@ drawgui:
 	EndIf
 Return
 
-guiohi:
+skipGUI:
 
 Function loadguibuttons()
 	img=LoadImage("gfx/GUI_helikopteri.png")
@@ -133,7 +141,9 @@ Function loadguibuttons()
 	img=LoadImage("gfx/GUI_waypoint.png")
 	guibuttons(GUI_WAYPOINT,0)=maketile(img,0)
 	guibuttons(GUI_WAYPOINT,1)=maketile(img,1)
-	
 EndFunction
 
+Function mouseIn(x, y, w, h)
+	Return (MouseX() > x And MouseX() < (x + w) And MouseY() > y And MouseY() < (y + h))
+EndFunction
 

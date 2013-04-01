@@ -39,7 +39,7 @@ main:
         lastUpdate = Timer()
         UpdateFireSpreading(t#, part)
         part + 1
-		
+
 		Gosub updategui
 
 		doublePx = Not KeyDown(cbkeyZ)
@@ -64,19 +64,29 @@ main:
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
 				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
 					burning=Min(Max(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,0),1)
-					id=	mapTiles(tx,ty)
+					id = mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
-				ttx=tx
+				ttx = tx
                 For c.ENTITIES = Each ENTITIES
                     If c\etype = ENTITY_COPTER And RoundUp(c\tx) = tx Then
-						Gosub drawCopter
+						a = (GetAngle(c\tx - c\xv, c\ty - c\yv, c\tx, c\ty) - 45) Mod 360
+						If a > 0 And a < 90 Then dir = 0
+						If a > 90 And a < 180 Then dir = 1
+						If a > 180 And a < 270 Then dir = 2
+						If a > 270 And a < 360 Then dir = 3
+						
+						tx = c\tx
+						ty = c\ty
+						Gosub kamera
+						DrawImage copter(dir, 0), sx - TW / 2, sy - ImageHeight(copter(dir, 0))
+						DrawImage copter(dir, 1), sx - TW / 2, -c\z + sy - ImageHeight(copter(dir, 1))
                     EndIf
                 Next c
-				tx=ttx
+				tx = ttx
 			Next tx
 		EndIf
-        
+
 		Gosub updatewaypoints
 		Gosub drawWaypoints
 		
@@ -84,10 +94,23 @@ main:
 			Gosub updateParticles
 			Gosub drawgui
         EndIf
+
+		// NAPALMI
+		If MouseDown(2) Then
+			sx = MouseX() / 4.0
+			sy = MouseY() / 4.0
+			Gosub inversekamera
+			If tx >= 0 And ty >= 0 And tx < MAP_WIDTH And ty < MAP_HEIGHT Then
+				For i = 0 To 20
+					makeparticle(PARTICLE_FIRE, tx + 1, ty, 14, 0, 0, 80.0, 0, 0, -180, 0, 1000)
+				Next i
+			EndIf
+		EndIf
+		
+		// Draw doublepixel buffer And SCREEN
         DrawToScreen
         If doublePx Then Gosub scalebuffer
-        DrawImage gbuffer,0,0
-        
+        DrawImage gbuffer, 0, 0
         DrawScreen
     Forever
 Return
@@ -100,7 +123,6 @@ updatecopter:
             // Get waypoint
             wp.WAYPOINTS = ConvertToType(c\wayPoint)
             If wp <> NULL Then
-                follow# = 0.04
                 tmpx# = c\tx
                 tmpy# = c\ty
 				s# = COPTER_SPEED * t#
@@ -140,7 +162,7 @@ updatecopter:
                 c\yv = c\ty - tmpy             
             EndIf
             
-            If  c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
+            If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
                 If c\start Then
 					c\tank# = c\tank - t# * COPTER_FUEL_USAGE
                     For i=0 To 10
@@ -156,12 +178,11 @@ Return
 updateParticles:
 	Lock()
 	For p.ENTITIES = Each ENTITIES
-
         If p\etype = ENTITY_PARTICLE Then
             txf# = p\tx
             tyf# = p\ty
             Gosub kamerafloat
-            PutPixel2 sxf, syf-p\z,pColors(p\t, p\f)
+            PutPixel2 sxf, syf - p\z, pColors(p\t, p\f)
             p\tx = p\tx + (p\xv + WIND_SPEED_X*0.2) * t#
             p\ty = p\ty + (p\yv + WIND_SPEED_Y*0.2) * t#
             p\z = p\z + p\zv * t#
