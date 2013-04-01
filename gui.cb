@@ -23,9 +23,9 @@ loadguibuttons()
 Goto guiohi
 
 updategui:
-	If GetMouse()=0 Then
-		If MouseY()>124*4 And MouseY()<140*4 And MouseX()>10*4 And MouseX()<130*4 And (MouseX()/4-10)Mod 20<16 Then guiaction=(MouseX()/4-10)/20
-	EndIf
+	
+		If MouseY()>124*4 And MouseY()<140*4 And MouseX()>10*4 And MouseX()<130*4 And (MouseX()/4-10)Mod 20<16 And MouseHit(1) Then guiaction=(MouseX()/4-10)/20
+	
 	
 Return
 
