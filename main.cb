@@ -16,57 +16,21 @@ Repeat
 	DrawScreen
 Forever
 
-copterx#=0
-coptery#=0
-'copterz#=52
-
 main:
     // Start by loading and populating the map with trees.
     GenerateMap("maps/testi.png", 0)
-    Color cbwhite
-    DrawToScreen
-    iterations# = 105
-    cx=100
-    cy=-325
-    For i=0 To Int(iterations)
-        GrowTrees()
-        // Render loading animation
-        If i Mod 10 = 1 Then
-            cx = cx + SW*1.5 : cy = cy + SH*1.5
-            For tx=0 To MAP_WIDTH-1
-                For ty=0 To MAP_HEIGHT-1
-                    id = mapTiles(tx,ty)
-                    Gosub drawTile
-                Next ty
-            Next tx
-            cx = cx - SW*1.5 : cy = cy - SH*1.5
-            Color cbblack
-            CenterText 401,315,"Growing trees..."
-            Box 399-(i/iterations*800)/2,289,i/iterations*800+2,22,1
-            Color cbwhite
-            CenterText 400,314,"Growing trees..."
-            Color 255-i/iterations*200,255,255
-            Box 400-(i/iterations*800)/2,290,i/iterations*800,20,1
-            DrawScreen
-        EndIf
-    Next i
+    Gosub drawLoading
     part = 0
     lastUpdate = Timer()
     ClearMouse
     ClearKeys
-    
+
     // Create test copter
     c.ENTITIES = New(ENTITIES)
     c\etype = ENTITY_COPTER
     c\tank = 5000
     c\z = 40
-    makingWP = NULL
-    // Create test copter
-    'c.ENTITIES = New(ENTITIES)
-    'c\etype = ENTITY_COPTER
-    'c\tank = 5000
-    'c\z = 60
-    'c\tx = 30
+    makingWP = 0
     Repeat
         'SetWindow "FPS:" + FPS()
         DrawToImage gBuffer
@@ -92,13 +56,9 @@ main:
 					id=	mapTiles(tx,ty)
 					Gosub drawTile
 				Next ty
-				'If copterx=tx Then //Or copterx=tx+1 
-				'	Gosub updateParticles
-				'	Gosub drawcopter
-				'EndIf
 			Next tx
 			cx = cx - SW*1.5 : cy = cy - SH*1.5
-		Else	
+		Else
             xlimit=-cx/16-cy/8
             ylimit=cx/16-cy/8
 			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
@@ -110,17 +70,7 @@ main:
 				ttx=tx
                 For c.ENTITIES = Each ENTITIES
                     If c\etype = ENTITY_COPTER And RoundUp(c\tx) = tx Then
-                        a = (GetAngle(c\tx - c\xv, c\ty - c\yv, c\tx, c\ty) - 45) Mod 360
-                        If a > 0 And a < 90 Then dir = 0
-                        If a > 90 And a < 180 Then dir = 1
-                        If a > 180 And a < 270 Then dir = 2
-                        If a > 270 And a < 360 Then dir = 3
-                        
-                        tx = c\tx
-                        ty = c\ty
-                        Gosub kamera
-                        DrawImage copter(dir, 0), sx - TW / 2, sy - ImageHeight(copter(dir, 0))
-                        DrawImage copter(dir, 1), sx - TW / 2, -c\z + sy - ImageHeight(copter(dir, 1))                        
+						Gosub drawCopter
                     EndIf
                 Next c
 				tx=ttx
@@ -130,7 +80,6 @@ main:
 		Gosub updatewaypoints
 		Gosub drawWaypoints
 		
-
 		If doublePx Then
 			Gosub updateParticles
 			Gosub drawgui
@@ -144,33 +93,6 @@ main:
 Return
 
 updatecopter:
-    remstart
-	tmpcopterx# = copterx
-	tmpcoptery# = coptery
-
-	sx=MouseX()/4.0
-	sy=MouseY()/4.0
-	Gosub inversekamera
-	follow#=0.03
-	copterx=copterx*(1-follow)+tx*follow
-	coptery=coptery*(1-follow)+ty*follow
-
-	copterz=40 + Sin(Timer()/10) * 6
-	
-    xcopterv# = copterx - tmpcopterx
-    ycopterv# = coptery - tmpcoptery
-    
-	If MouseDown(1) Then
-        For i=0 To 10
-            makeparticle(PARTICLE_FOAM,copterx+1,coptery,copterz+10,xcopterv,ycopterv,-40.0,0,0,-40,0,copterz/30*550)
-        Next i
-	EndIf
-    If MouseDown(2) And copterx>=0 And coptery>=0 And copterx<MAP_WIDTH And coptery<MAP_HEIGHT Then
-        For i=0 To 10
-            makeparticle(PARTICLE_FIRE,copterx+1,coptery,copterz+10,0,0,-40.0,0,0,-40,0,copterz/30*550)
-        Next i
-    EndIf
-    remend
     For c.ENTITIES = Each ENTITIES
         If c\etype = ENTITY_COPTER Then
             // Move copter up and down

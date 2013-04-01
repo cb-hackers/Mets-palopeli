@@ -24,7 +24,6 @@ loadguibuttons()
 Goto guiohi
 
 updatewaypoints:
-
         If MouseHit(1) Then
             If Not makingWP Then
                 wp.WAYPOINTS = New(WAYPOINTS)        
