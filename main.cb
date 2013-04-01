@@ -169,7 +169,7 @@ updatecopter:
             
             If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
                 If c\start Then
-					c\tank# = c\tank - t# * COPTER_FUEL_USAGE
+					'c\tank# = c\tank - t# * COPTER_FUEL_USAGE
                     For i=0 To 10
                         makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10, c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550)
                     Next i
@@ -213,9 +213,6 @@ updateParticles:
 Return
 
 
-
-
-
 scaleBuffer:
     For sb_i=SH To 0 Step -1
         CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
@@ -228,6 +225,5 @@ scaleBuffer:
         CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
         CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
         CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
-
     Next sb_i
 Return

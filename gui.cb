@@ -47,13 +47,14 @@ updatewaypoints:
 			makingWP = ConvertToInteger(wp)
 		Else
 			wp.WAYPOINTS = ConvertToType(makingWP)
-			sx = MouseX() / 4.0
-			sy = MouseY() / 4.0
-			Gosub inversekamera
-			wp\lx = tx
-			wp\ly = ty
-			makingWP = 0
-			'guisubaction2 = 0 // Reset wp button
+			If wp <> NULL Then
+				sx = MouseX() / 4.0
+				sy = MouseY() / 4.0
+				Gosub inversekamera
+				wp\lx = tx
+				wp\ly = ty
+				makingWP = 0
+			EndIf
 		EndIf
 	EndIf
 Return
