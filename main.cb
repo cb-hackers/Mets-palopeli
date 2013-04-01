@@ -181,13 +181,13 @@ updatecopter:
 Return
 
 updateParticles:
-	Lock()
+	'Lock()
 	For p.ENTITIES = Each ENTITIES
         If p\etype = ENTITY_PARTICLE Then
             txf# = p\tx
             tyf# = p\ty
             Gosub kamerafloat
-            PutPixel2 sxf, syf - p\z, pColors(p\t, p\f)
+            PutPixel sxf, syf - p\z, pColors(p\t, p\f)
             p\tx = p\tx + (p\xv + WIND_SPEED_X*0.2) * t#
             p\ty = p\ty + (p\yv + WIND_SPEED_Y*0.2) * t#
             p\z = p\z + p\zv * t#
@@ -209,7 +209,7 @@ updateParticles:
             EndIf
         EndIf
 	Next p
-	Unlock
+	'Unlock
 Return
 
 
