@@ -107,7 +107,7 @@ Color cbwhite
     Next i
 Return
 
-drawwaypoints:
+drawWaypoints:
 	Color cbwhite
 	For wp.WAYPOINTS = Each WAYPOINTS
 		tx = wp\tx
@@ -116,7 +116,7 @@ drawwaypoints:
 		wpx = sx
 		wpy = sy
 		DrawImage flags(0), sx, sy - 12
-		If wp\lx <> wp\tx And wp\ly <> wp\ty Then
+		If wp\lx <> wp\tx Or wp\ly <> wp\ty Then
 			tx = wp\lx
 			ty = wp\ly
 			Gosub kamera
