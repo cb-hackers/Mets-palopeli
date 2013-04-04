@@ -173,18 +173,18 @@ Return
 
 skipRendering:
 
-Function makeParticle(t,x,y,z,xv#,yv#,zv#,xa#,ya#,za#,f,l)
+Function makeParticle(t,x#,y#,z#,xv#,yv#,zv#,xa#,ya#,za#,f,l)
     p.ENTITIES = New(ENTITIES)
     p\etype = ENTITY_PARTICLE
-    p\t=t
-	p\tx=x+0.5+ Rnd(-0.3,0.3)
-	p\ty=y+0.5+ Rnd(-0.3,0.3)
-	p\z=z + Rnd(-0.3,0.3)
-	p\xv=xv + Rnd(-0.4,0.4)
-	p\yv=yv + Rnd(-0.4,0.4)
+    p\t = t
+	p\tx = x + 0.5 + Rnd(-0.3, 0.3)
+	p\ty = y + 0.5 + Rnd(-0.3, 0.3)
+	p\z=z + Rnd(-0.3, 0.3)
+	p\xv=xv + Rnd(-0.1, 0.1)
+	p\yv=yv + Rnd(-0.1, 0.1)
 	p\zv=zv
-	p\xa=xa + Rnd(-4,4)
-	p\ya=ya + Rnd(-4,4)
+	p\xa=xa + Rnd(-4, 4)
+	p\ya=ya + Rnd(-4, 4)
 	p\za=za
 	p\f=f
 	p\l=l

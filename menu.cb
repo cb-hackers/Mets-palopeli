@@ -1,4 +1,4 @@
-SetWindow "Mets-palopeli ALPHA v0.0.2 TECHDEMO 2"
+SetWindow TITLE_STRING
 
 menuBg = LoadImage("gfx/menu.png")
 
@@ -16,41 +16,40 @@ credits(2) = "Gfx + Sfx...: Wing"
 credits(3) = "Code + Party: Tuhis"
 credits(4) = "@ Tuhislanit  <3"
 
+// Menubutton properties.
+menuItems = 2
 menuX = 60
+menuY = 39
 menuW = 80
 menuH = 18
-menuPlayY = 40
-menuEndY = 58
+
+Const MENU_PLAY = 0
+Const MENU_END = 1
 
 menu:
     DrawToImage gBuffer
     Cls
     DrawImage menuBg, 0, 0
-    DrawImage flames(1,Rand(3)),127,-3
     
+    // Flaming O
+    DrawImage flames(1, Rand(3)), 127, -3
+    
+    // ALPHA
     Color cbred
-    Line 143,22, 162,28
-    Text 148, -5+Rand(2), "ALPHA"
-    
-    hitx = 0
-    hitNum = 0
-    
-    If MouseX()/4 > menuX And MouseX()/4 < menuX+menuW Then hitx = 1
-    If hitx And MouseY()/4 > menuPlayY And MouseY()/4 < menuPlayY+menuH Then 
-        DrawImage flames(1-MouseDown(1),Rand(3)),menuX,menuPlayY-15+Rand(1)
-        hitNum = 1
+    Line 143, 22, 162, 28
+    Text 148, -5 + Rand(2), "ALPHA"
+
+    // Menu buttons
+    If MouseY() / 4 > menuY And MouseY() / 4 < menuY + menuH * menuItems And MouseX() / 4 > menuX And MouseX() / 4 < menuX + MenuW Then
+        menuAction = (MouseY() / 4 - menuY) / menuH
+        DrawImage flames(1 - MouseDown(1), Rand(3)), menuX, menuY - 14 + Rand(1) + menuH * menuAction * 0.82
+    Else
+        menuAction = -1
     EndIf
-    If hitx And MouseY()/4 > menuEndY And MouseY()/4 < menuEndY+menuH Then 
-        DrawImage flames(1-MouseDown(1),Rand(3)),menuX,menuEndy-15+Rand(1)
-        hitNum = 2
-    EndIf
+
     If MouseUp(1) Then
-        Select hitNum
-            Case 1
-                Gosub main
-            Case 2
-                End
-        EndSelect
+        If menuAction = MENU_PLAY Then Gosub main
+        If menuAction = MENU_END Then End
     EndIf
 Return
 
