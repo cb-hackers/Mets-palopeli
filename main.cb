@@ -56,8 +56,8 @@ main:
 		doublePx = Not KeyDown(cbkeyZ)
 		If doublePx Then Gosub updatecopter
 		
-        cx=cx+((LeftKey() Or KeyDown(cbkeya))-(RightKey() Or KeyDown(cbkeyd)))*4 * (1 + (Not doublePx) * 3) * 35 * t
-        cy=cy-((DownKey() Or KeyDown(cbkeys))-(UpKey() Or KeyDown(cbkeyw)))*4 * (1 + (Not doublePx) * 3) * 35 * t
+        cx = cx + ((LeftKey() Or KeyDown(cbkeya)) - (RightKey() Or KeyDown(cbkeyd))) * 4 * (1 + (Not doublePx) * 3) * 35 * t
+        cy = cy - ((DownKey() Or KeyDown(cbkeys)) - (UpKey() Or KeyDown(cbkeyw))) * 4 * (1 + (Not doublePx) * 3) * 35 * t
 	
 		If Not doublePx Then 
 			cx = cx + SW*1.5 : cy = cy + SH*1.5
@@ -212,7 +212,7 @@ updateParticles:
             p\xv = p\xv + p\xa * t#
             p\yv = p\yv + p\ya * t#
             p\zv = p\zv + p\za * t#
-            p\f = Min(pFrames, Max(0, RoundDown(((Timer() - p\start + Rand(-p\l / 4, p\l / 4)) / Float(p\l)) * pFrames)))
+            p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start + Rand(-p\l / 4, p\l / 4)) / Float(p\l)) * pFrames)))
             If Timer() > p\start + p\l Then
                 If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
                     Select p\t
