@@ -1,7 +1,11 @@
 'This is your first CoolBasic program!
+
+// Map constants and routines
 Include "map.cb"
-Include	"renderer.cb"
 Include "firespreading.cb"
+// Resources and rendering
+Include	"renderer.cb"
+
 
 SAFEEXIT OFF
 Const TITLE_STRING = "Mets-palopeli ALPHA v0.0.2 TECHDEMO 2 HOTFIX 1"
@@ -205,7 +209,7 @@ updateParticles:
             txf# = p\tx
             tyf# = p\ty
             Gosub kamerafloat
-            If sxf > 0 And syf > 0 And sxf < SW And syf < SH Then PutPixel2 sxf, syf - p\z, pColors(p\t, p\f)
+            If sxf > 0 And syf > 0 And sxf < SW - 1 And syf < SH - 1 Then PutPixel2 sxf, syf - p\z, pColors(p\t, p\f)
             p\tx = p\tx + (p\xv + WIND_SPEED_X * 0.2) * t#
             p\ty = p\ty + (p\yv + WIND_SPEED_Y * 0.2) * t#
             p\z = p\z + p\zv * t#
