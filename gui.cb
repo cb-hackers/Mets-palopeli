@@ -1,7 +1,7 @@
 
 gui=LoadImage("gfx/gui.png")
 minimap=MakeImage(50,50)
-Include "menu.cb"
+
 
 Dim guibuttons(10,1)
 Const GUI_COPTER=0

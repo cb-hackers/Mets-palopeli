@@ -1,4 +1,11 @@
-'This is your first CoolBasic program!
+SAFEEXIT OFF 'This is your first CoolBasic program!
+
+Const GAME_TITLE         = "Mets-palopeli"
+Const VERSION_STRING     = "v0.0.2-2 ALPHA" // "release.beta.alpha-hotfix CURRENT"
+Const RELEASE_TYPE       = "TECHDEMO 2"
+
+Global TITLE_STRING As String
+TITLE_STRING = GAME_TITLE + " " + VERSION_STRING + " " + RELEASE_TYPE
 
 // Map constants and routines
 Include "map.cb"
@@ -6,24 +13,24 @@ Include "firespreading.cb"
 // Resources and rendering
 Include	"renderer.cb"
 
-
-SAFEEXIT OFF
-Const TITLE_STRING = "Mets-palopeli ALPHA v0.0.2 TECHDEMO 2 HOTFIX 1"
-
 gBuffer = MakeImage(SW * 4,SH * 4)
-
-'copterSoundFile = LoadSound("sfx/kopterihumina.wav")
-
+// GUI resources and routines
 Include "gui.cb"
+// Main menu
+Include "menu.cb"
 
+// Main loop
+mainMenu:
 Repeat
-    Gosub menu
+    Gosub updateMenu
+    // Render scaled pixels.
 	Gosub scaleBuffer
     DrawToScreen
 	DrawImage gBuffer, 0, 0
+    // Credits won't be scaled.
     Gosub credits
 	DrawScreen
-Until KeyHit(cbkeyesc)
+Until KeyHit(cbKeyESC)
 End
 
 load:
@@ -31,14 +38,14 @@ load:
     GenerateMap("maps/testi.png", 0)
     Gosub drawLoading
 
-    // Create a test copter
-	'copterSound = PlaySound(copterSoundFile)
+    // Create a test copter.
     c.ENTITIES = New(ENTITIES)
     c\etype = ENTITY_COPTER
     c\tank = 5000
     c\z = 40
-    makingWP = 0
 
+    // Initialize state.
+    makingWP = 0
     part = 0
     lastUpdate = Timer()
     ClearMouse
@@ -49,10 +56,15 @@ main:
     Gosub load
     Repeat
         SetWindow TITLE_STRING + " FPS: " + FPS()
+        // Draw to a buffer instead of screen.
         DrawToImage gBuffer
         Cls
+        
+        // Update delta time.
         t# = (Timer() - lastUpdate) / 1000.0
         lastUpdate = Timer()
+        
+        
         Gosub updateFireSpreading
 
 		Gosub updategui
@@ -60,34 +72,38 @@ main:
 		doublePx = Not KeyDown(cbkeyZ)
 		If doublePx Then Gosub updatecopter
 		
-        cx = cx + ((LeftKey() Or KeyDown(cbkeya)) - (RightKey() Or KeyDown(cbkeyd))) * 4 * (1 + (Not doublePx) * 3) * 35 * t
-        cy = cy - ((DownKey() Or KeyDown(cbkeys)) - (UpKey() Or KeyDown(cbkeyw))) * 4 * (1 + (Not doublePx) * 3) * 35 * t
+        // Camera movement.
+        cx = cx + ( (LeftKey() Or KeyDown(cbkeya)) - (RightKey() Or KeyDown(cbkeyd)) ) * (1 + (Not doublePx) * 3) * 140 * t
+        cy = cy - ( (DownKey() Or KeyDown(cbkeys)) - (UpKey()    Or KeyDown(cbkeyw)) ) * (1 + (Not doublePx) * 3) * 140 * t
 	
-		If Not doublePx Then 
-			cx = cx + SW*1.5 : cy = cy + SH*1.5
-			For tx=0 To MAP_WIDTH-1
-				For ty=0 To MAP_HEIGHT-1
-					burning=Min(Max(0,heat(tx,ty)*(burnTimes(tx,ty)>0)/200.0),1)
-					id=	mapTiles(tx,ty)
+		If Not doublePx Then // Draw zoomed out.
+            // Center the camera
+			cx = cx + SW * 1.5 : cy = cy + SH * 1.5
+			For tx = 0 To MAP_WIDTH - 1
+				For ty = 0 To MAP_HEIGHT - 1
+					burning = Min(Max(0, heat(tx, ty) * (burnTimes(tx, ty) > 0) / 200.0), 1)
+					id = mapTiles(tx, ty)
 					Gosub drawTile
 				Next ty
 			Next tx
-			cx = cx - SW*1.5 : cy = cy - SH*1.5
+            // Reset camera position.
+			cx = cx - SW * 1.5 : cy = cy - SH * 1.5
 		Else
-            xlimit=-cx/16-cy/8
-            ylimit=cx/16-cy/8
-			For tx=Max(0,xlimit) To Min(xlimit+30 ,MAP_WIDTH-1)
-				For ty=Max(0,ylimit-10) To Min(ylimit+21 ,MAP_HEIGHT-1)
-					burning=Min(Max(heat(tx,ty)*(burnTimes(tx,ty)>0)/100.0,0),1)
-					id = mapTiles(tx,ty)
+            // Limit rendering to visible screen area.
+            xlimit = -cx / 16 - cy / 8
+            ylimit =  cx / 16 - cy / 8
+			For tx = Max(0, xlimit) To Min(xlimit + 30, MAP_WIDTH - 1)
+				For ty = Max(0, ylimit - 10) To Min(ylimit + 21, MAP_HEIGHT - 1)
+					burning = Min(Max(heat(tx, ty) * (burnTimes(tx, ty) > 0) / 100.0, 0), 1)
+					id = mapTiles(tx, ty)
 					Gosub drawTile
 				Next ty
 				ttx = tx
                 For c.ENTITIES = Each ENTITIES
                     If c\etype = ENTITY_COPTER And RoundUp(c\tx) = tx Then
 						a = (GetAngle(c\tx - c\xv, c\ty - c\yv, c\tx, c\ty) - 45) Mod 360
-						If a > 0 And a < 90 Then dir = 0
-						If a > 90 And a < 180 Then dir = 1
+						If a > 0   And a < 90  Then dir = 0
+						If a > 90  And a < 180 Then dir = 1
 						If a > 180 And a < 270 Then dir = 2
 						If a > 270 And a < 360 Then dir = 3
 						

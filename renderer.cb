@@ -84,6 +84,7 @@ Color cbwhite
     cx=100
     cy=-325
     For i=0 To Int(iterations)
+        If KeyHit(cbKeyESC) Then Goto mainMenu
         GrowTrees()
         // Render loading animation
         If i Mod 10 = 1 And render Then
