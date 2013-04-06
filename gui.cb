@@ -2,6 +2,9 @@
 gui=LoadImage("gfx/gui.png")
 minimap=MakeImage(50,50)
 
+// Drawable game area.
+Const GUI_WINDOW_WIDTH = 144
+Const GUI_WINDOW_HEIGHT = 124
 
 Dim guibuttons(10,1)
 Const GUI_COPTER=0

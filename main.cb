@@ -1,8 +1,8 @@
 SAFEEXIT OFF 'This is your first CoolBasic program!
 
-Const GAME_TITLE         = "Mets-palopeli"
-Const VERSION_STRING     = "v0.0.2-2 ALPHA" // "release.beta.alpha-hotfix CURRENT"
-Const RELEASE_TYPE       = "TECHDEMO 2"
+Const GAME_TITLE     = "Mets-palopeli"
+Const VERSION_STRING = "v0.0.2-2 ALPHA" // "release.beta.alpha-hotfix CURRENT"
+Const RELEASE_TYPE   = "TECHDEMO 2"
 
 Global TITLE_STRING As String
 TITLE_STRING = GAME_TITLE + " " + VERSION_STRING + " " + RELEASE_TYPE
@@ -22,62 +22,62 @@ Include "menu.cb"
 // Main loop
 mainMenu:
 Repeat
-    Gosub updateMenu
-    // Render scaled pixels.
+	Gosub updateMenu
+	// Render scaled pixels.
 	Gosub scaleBuffer
-    DrawToScreen
+	DrawToScreen
 	DrawImage gBuffer, 0, 0
-    // Credits won't be scaled.
-    Gosub credits
+	// Credits won't be scaled.
+	Gosub credits
 	DrawScreen
 Until KeyHit(cbKeyESC)
 End
 
 load:
-    // Start by loading and populating the map with trees.
-    GenerateMap("maps/testi.png", 0)
-    Gosub drawLoading
+	// Start by loading and populating the map with trees.
+	GenerateMap("maps/testi.png", 0)
+	Gosub drawLoading
 
-    // Create a test copter.
-    c.ENTITIES = New(ENTITIES)
-    c\etype = ENTITY_COPTER
-    c\tank = 5000
-    c\z = 40
+	// Create a test copter.
+	c.ENTITIES = New(ENTITIES)
+	c\etype = ENTITY_COPTER
+	c\tank = 5000
+	c\z = 40
 
-    // Initialize state.
-    makingWP = 0
-    part = 0
-    lastUpdate = Timer()
-    ClearMouse
-    ClearKeys
+	// Initialize state.
+	makingWP = 0
+	part = 0
+	lastUpdate = Timer()
+	ClearMouse
+	ClearKeys
 Return
 
 main:
-    Gosub load
-    Repeat
-        SetWindow TITLE_STRING + " FPS: " + FPS()
-        // Draw to a buffer instead of screen.
-        DrawToImage gBuffer
-        Cls
-        
-        // Update delta time.
-        t# = (Timer() - lastUpdate) / 1000.0
-        lastUpdate = Timer()
-        
-        
-        Gosub updateFireSpreading
+	Gosub load
+	Repeat
+		SetWindow TITLE_STRING + " FPS: " + FPS()
+		// Draw to a buffer instead of screen.
+		DrawToImage gBuffer
+		Cls
+		
+		// Update delta time.
+		t# = (Timer() - lastUpdate) / 1000.0
+		lastUpdate = Timer()
+		
+		
+		Gosub updateFireSpreading
 
 		Gosub updategui
 
 		doublePx = Not KeyDown(cbkeyZ)
 		If doublePx Then Gosub updatecopter
 		
-        // Camera movement.
-        cx = cx + ( (LeftKey() Or KeyDown(cbkeya)) - (RightKey() Or KeyDown(cbkeyd)) ) * (1 + (Not doublePx) * 3) * 140 * t
-        cy = cy - ( (DownKey() Or KeyDown(cbkeys)) - (UpKey()    Or KeyDown(cbkeyw)) ) * (1 + (Not doublePx) * 3) * 140 * t
+		// Camera movement.
+		cx = cx + ( (LeftKey() Or KeyDown(cbkeya)) - (RightKey() Or KeyDown(cbkeyd)) ) * (1 + (Not doublePx) * 3) * 140 * t
+		cy = cy - ( (DownKey() Or KeyDown(cbkeys)) - (UpKey()    Or KeyDown(cbkeyw)) ) * (1 + (Not doublePx) * 3) * 140 * t
 	
 		If Not doublePx Then // Draw zoomed out.
-            // Center the camera
+			// Center the camera
 			cx = cx + SW * 1.5 : cy = cy + SH * 1.5
 			For tx = 0 To MAP_WIDTH - 1
 				For ty = 0 To MAP_HEIGHT - 1
@@ -86,12 +86,12 @@ main:
 					Gosub drawTile
 				Next ty
 			Next tx
-            // Reset camera position.
+			// Reset camera position.
 			cx = cx - SW * 1.5 : cy = cy - SH * 1.5
 		Else
-            // Limit rendering to visible screen area.
-            xlimit = -cx / 16 - cy / 8
-            ylimit =  cx / 16 - cy / 8
+			// Limit rendering to visible screen area.
+			xlimit = -cx / 16 - cy / 8
+			ylimit =  cx / 16 - cy / 8
 			For tx = Max(0, xlimit) To Min(xlimit + 30, MAP_WIDTH - 1)
 				For ty = Max(0, ylimit - 10) To Min(ylimit + 21, MAP_HEIGHT - 1)
 					burning = Min(Max(heat(tx, ty) * (burnTimes(tx, ty) > 0) / 100.0, 0), 1)
@@ -99,21 +99,21 @@ main:
 					Gosub drawTile
 				Next ty
 				ttx = tx
-                For c.ENTITIES = Each ENTITIES
-                    If c\etype = ENTITY_COPTER And RoundUp(c\tx) = tx Then
+				For c.ENTITIES = Each ENTITIES
+					If c\etype = ENTITY_COPTER And RoundUp(c\tx) = tx Then
+						// Calculate copter moving direction.
 						a = (GetAngle(c\tx - c\xv, c\ty - c\yv, c\tx, c\ty) - 45) Mod 360
 						If a > 0   And a < 90  Then dir = 0
 						If a > 90  And a < 180 Then dir = 1
 						If a > 180 And a < 270 Then dir = 2
 						If a > 270 And a < 360 Then dir = 3
-						
 						tx = c\tx
 						ty = c\ty
 						Gosub kamera
-						DrawImage copter(dir, 0), sx - TW / 2, sy - ImageHeight(copter(dir, 0))
-						DrawImage copter(dir, 1), sx - TW / 2, -c\z + sy - ImageHeight(copter(dir, 1))
-                    EndIf
-                Next c
+						DrawImage copter(dir, 0), sx - TW / 2, sy - 8 // ImageHeight(copter(dir, 0))
+						DrawImage copter(dir, 1), sx - TW / 2, -c\z + sy - 17 // ImageHeight(copter(dir, 1))
+					EndIf
+				Next c
 				tx = ttx
 			Next tx
 		EndIf
@@ -124,7 +124,7 @@ main:
 		If doublePx Then
 			Gosub updateParticles
 			Gosub drawgui
-        EndIf
+		EndIf
 
 		// NAPALMI
 		If MouseDown(2) Then
@@ -139,41 +139,41 @@ main:
 		EndIf
 		
 		// Draw doublepixel buffer And SCREEN
-        DrawToScreen
-        If doublePx Then Gosub scalebuffer
-        DrawImage gbuffer, 0, 0
-        DrawScreen
-    Until KeyHit(cbkeyesc)
-    Gosub unload
+		DrawToScreen
+		If doublePx Then Gosub scalebuffer
+		DrawImage gbuffer, 0, 0
+		DrawScreen
+	Until KeyHit(cbkeyesc)
+	Gosub unload
 Return
 
 unload:
-    For e.ENTITIES = Each ENTITIES
-        Delete e
-    Next e
-    For wp.WAYPOINTS = Each WAYPOINTS
-        Delete wp
-    Next wp
+	For e.ENTITIES = Each ENTITIES
+		Delete e
+	Next e
+	For wp.WAYPOINTS = Each WAYPOINTS
+		Delete wp
+	Next wp
 Return
 
 updateCopter:
 	'If Not SoundPlaying(copterSound) Then copterSound = PlaySound(copterSoundFile)
-    For c.ENTITIES = Each ENTITIES
-        If c\etype = ENTITY_COPTER Then
-            // Move copter up and down
-            c\z = c\z + Sin(Timer() / 10) * 0.4
-            // Get waypoint
-            wp.WAYPOINTS = ConvertToType(c\wayPoint)
-            If wp <> NULL Then
-                tmpx# = c\tx
-                tmpy# = c\ty
+	For c.ENTITIES = Each ENTITIES
+		If c\etype = ENTITY_COPTER Then
+			// Move copter up and down
+			c\z = c\z + Sin(Timer() / 10) * 0.4
+			// Get waypoint
+			wp.WAYPOINTS = ConvertToType(c\wayPoint)
+			If wp <> NULL Then
+				tmpx# = c\tx
+				tmpy# = c\ty
 				s# = COPTER_SPEED * t#
-                // WP not reached
-                If Not c\start Then
-                    // Move to waypoint
+				// WP not reached
+				If Not c\start Then
+					// Move to waypoint
 					ang# = GetAngle(c\tx, c\ty, wp\tx, wp\ty) 
-                    // Check distance
-                    d# = Distance(c\tx, c\ty, wp\tx, wp\ty)
+					// Check distance
+					d# = Distance(c\tx, c\ty, wp\tx, wp\ty)
 					If d < s# Then
 						c\tx# = c\tx# + Cos(ang#) * d#
 						c\ty# = c\ty# - Sin(ang#) * d#
@@ -182,85 +182,85 @@ updateCopter:
 						c\tx# = c\tx# + Cos(ang#) * s#
 						c\ty# = c\ty# - Sin(ang#) * s#
 					EndIf
-                Else
-                    // Waypoint reached
-                    // Move to end of waypoint line
+				Else
+					// Waypoint reached
+					// Move to end of waypoint line
 					ang# = GetAngle(c\tx, c\ty, wp\lx, wp\ly) 
-                    // Check distance
-                    d# = Distance(c\tx, c\ty, wp\lx, wp\ly)
+					// Check distance
+					d# = Distance(c\tx, c\ty, wp\lx, wp\ly)
 					If d < s# Then
 						c\tx# = c\tx# + Cos(ang#) * d#
 						c\ty# = c\ty# - Sin(ang#) * d#
 						
 						c\start = False
-                        If wp\n Then c\wayPoint = wp\n
+						If wp\n Then c\wayPoint = wp\n
 					Else
 						c\tx# = c\tx# + Cos(ang#) * s#
 						c\ty# = c\ty# - Sin(ang#) * s#
 					EndIf
-                EndIf
-                // Calculate speed
-                c\xv = c\tx - tmpx
-                c\yv = c\ty - tmpy
+				EndIf
+				// Calculate speed
+				c\xv = c\tx - tmpx
+				c\yv = c\ty - tmpy
 				'SetSound copterSound, OFF, 100, 0, 44100 + Abs(Distance(0,0,c\xv,c\yv))*10000
-            EndIf
-            
-            If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
-                If c\start Then
+			EndIf
+			
+			If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
+				If c\start Then
 					'c\tank# = c\tank - t# * COPTER_FUEL_USAGE
-                    For i=0 To 10
-                        makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550)
-                    Next i
-                EndIf
-            EndIf
-            
-        EndIf
-    Next c
+					For i=0 To 10
+						makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550)
+					Next i
+				EndIf
+			EndIf
+			
+		EndIf
+	Next c
 Return
 
 updateParticles:
 	Lock()
 	For p.ENTITIES = Each ENTITIES
-        If p\etype = ENTITY_PARTICLE Then
-            txf# = p\tx
-            tyf# = p\ty
-            Gosub kamerafloat
-            If sxf > 0 And syf > 0 And sxf < SW - 1 And syf < SH - 1 Then PutPixel2 sxf, syf - p\z, pColors(p\t, p\f)
-            p\tx = p\tx + (p\xv + WIND_SPEED_X * 0.2) * t#
-            p\ty = p\ty + (p\yv + WIND_SPEED_Y * 0.2) * t#
-            p\z = p\z + p\zv * t#
-            p\xv = p\xv + p\xa * t#
-            p\yv = p\yv + p\ya * t#
-            p\zv = p\zv + p\za * t#
-            p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start + Rand(-p\l / 4, p\l / 4)) / Float(p\l)) * pFrames)))
-            If Timer() > p\start + p\l Then
-                If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
-                    Select p\t
-                        Case 0 // PARTICLE_FIRE
-                            heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) + 15
-                        Case 2 // PARTICLE_FOAM
-                            heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) - 15
-                    EndSelect
-                EndIf
-                Delete p
-            EndIf
-        EndIf
+		If p\etype = ENTITY_PARTICLE Then
+			txf# = p\tx
+			tyf# = p\ty
+			Gosub kamerafloat
+			If sxf => 0 And syf => 0 And sxf < GUI_WINDOW_WIDTH And syf - p\z < GUI_WINDOW_HEIGHT Then PutPixel2 sxf, syf - p\z, pColors(p\t, p\f)
+			p\tx = p\tx + (p\xv + WIND_SPEED_X * 0.2) * t#
+			p\ty = p\ty + (p\yv + WIND_SPEED_Y * 0.2) * t#
+			p\z = p\z + p\zv * t#
+			p\xv = p\xv + p\xa * t#
+			p\yv = p\yv + p\ya * t#
+			p\zv = p\zv + p\za * t#
+			p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start + Rand(-p\l / 4, p\l / 4)) / Float(p\l)) * pFrames)))
+			If Timer() > p\start + p\l Then
+				If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
+					Select p\t
+						Case 0 // PARTICLE_FIRE
+							heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) + 15
+						Case 2 // PARTICLE_FOAM
+							heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) - 15
+					EndSelect
+				EndIf
+				Delete p
+			EndIf
+		EndIf
 	Next p
 	Unlock
 Return
 
 
 scaleBuffer:
-    For sb_i=SH To 0 Step -1
-        CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
-        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
+	For sb_i=SH To 0 Step -1
+		CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
+		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
 		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
-        CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
-    Next sb_i
-    For sb_i=SW To 0 Step -1
-        CopyBox sb_i,0,1,SW*4	,sb_i*4,0,Image(gBuffer),Image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
-        CopyBox sb_i,0,1,SW*4	,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
-    Next sb_i
+		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
+	Next sb_i
+	For sb_i=SW To 0 Step -1
+		CopyBox sb_i,0,1,SW*4,sb_i*4,0,Image(gBuffer),Image(gBuffer)
+		CopyBox sb_i,0,1,SW*4,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
+		CopyBox sb_i,0,1,SW*4,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
+		CopyBox sb_i,0,1,SW*4,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
+	Next sb_i
 Return
