@@ -25,8 +25,8 @@ updateFireSpreading:
 					xx = x + Rnd(1) * WIND_SPEED_X
 					yy = y + Rnd(1) * WIND_SPEED_Y
 					If xx >= 0 And xx < MAP_WIDTH And yy >= 0 And yy < MAP_HEIGHT And Rnd(1) < tileFlamingChance(mapTiles(xx, yy)) Then
-                        burnTimes(xx, yy) = BURN_TIME_START
-                        heat(xx, yy) = heat(xx, yy) + 10
+						burnTimes(xx, yy) = BURN_TIME_START
+						heat(xx, yy) = heat(xx, yy) + 10
 					EndIf
 				EndIf
 			EndIf

@@ -27,38 +27,38 @@ Const MENU_PLAY = 0
 Const MENU_END = 1
 
 updateMenu:
-    DrawToImage gBuffer
-    Cls
-    DrawImage menuBg, 0, 0
-    
-    // Flaming O
-    DrawImage flames(1, Rand(3)), 127, -3
-    
-    // ALPHA
-    Color cbred
-    Line 143, 22, 162, 28
-    Text 148, -5 + Rand(2), "ALPHA"
+	DrawToImage gBuffer
+	Cls
+	DrawImage menuBg, 0, 0
+	
+	// Flaming O
+	DrawImage flames(1, Rand(3)), 127, -3
+	
+	// ALPHA
+	Color cbred
+	Line 143, 22, 162, 28
+	Text 148, -5 + Rand(2), "ALPHA"
 
-    // Menu buttons
-    If MouseY() / 4 > menuY And MouseY() / 4 < menuY + menuH * menuItems And MouseX() / 4 > menuX And MouseX() / 4 < menuX + MenuW Then
-        menuAction = (MouseY() / 4 - menuY) / menuH
-        DrawImage flames(1 - MouseDown(1), Rand(3)), menuX, menuY - 14 + Rand(1) + menuH * menuAction * 0.82
-    Else
-        menuAction = -1
-    EndIf
+	// Menu buttons
+	If MouseY() / 4 > menuY And MouseY() / 4 < menuY + menuH * menuItems And MouseX() / 4 > menuX And MouseX() / 4 < menuX + MenuW Then
+		menuAction = (MouseY() / 4 - menuY) / menuH
+		DrawImage flames(1 - MouseDown(1), Rand(3)), menuX, menuY - 14 + Rand(1) + menuH * menuAction * 0.82
+	Else
+		menuAction = -1
+	EndIf
 
-    If MouseUp(1) Then
-        If menuAction = MENU_PLAY Then Gosub main
-        If menuAction = MENU_END Then End
-    EndIf
+	If MouseUp(1) Then
+		If menuAction = MENU_PLAY Then Gosub main
+		If menuAction = MENU_END Then End
+	EndIf
 Return
 
 credits:
 	lastT2 = t2
-    t2 = Timer()
-    Color cbwhite
-    Text 15 + 15*Cos(t2/8),600-28,"Credits:"
-    Text 30 - 30*Sin(t2/10),600-14,credits(RoundDown(credit))
-    credit = credit + (t2 - lastT2) / 1000.0 * CREDIT_TIME
-    If credit > CREDIT_COUNT Then credit = 0
+	t2 = Timer()
+	Color cbwhite
+	Text 15 + 15*Cos(t2/8),600-28,"Credits:"
+	Text 30 - 30*Sin(t2/10),600-14,credits(RoundDown(credit))
+	credit = credit + (t2 - lastT2) / 1000.0 * CREDIT_TIME
+	If credit > CREDIT_COUNT Then credit = 0
 Return
