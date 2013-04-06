@@ -133,7 +133,7 @@ main:
 			Gosub inversekamerafloat
 			If txf >= 0 And tyf >= 0 And txf < MAP_WIDTH And tyf < MAP_HEIGHT Then
 				For i = 0 To 20
-					makeparticle(PARTICLE_FIRE, txf + 1, tyf, 14 + Rand(4), 0, 0, 80.0, 0, 0, -180, 0, 1000)
+					makeparticle(PARTICLE_FIRE, txf + 1, tyf, 14 + Rand(4), 0, 0, 80.0, 0, 0, -180, 0, 1000 + Rand(-100, 100))
 				Next i
 			EndIf
 		EndIf
@@ -185,7 +185,7 @@ updateCopter:
 					// Waypoint reached
 					// Move to end of waypoint line
 					ang# = GetAngle(c\tx, c\ty, wp\lx, wp\ly) 
-					// Check distance
+					// Check Distance
 					d# = Distance(c\tx, c\ty, wp\lx, wp\ly)
 					If d < s# Then
 						c\tx# = c\tx# + Cos(ang#) * d#
@@ -208,7 +208,7 @@ updateCopter:
 				If c\start Then
 					'c\tank# = c\tank - t# * COPTER_FUEL_USAGE
 					For i=0 To 10
-						makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550)
+						makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550 + Rand(-20, 20))
 					Next i
 				EndIf
 			EndIf
