@@ -128,12 +128,12 @@ main:
 
 		// NAPALMI
 		If MouseDown(2) Then
-			sx = MouseX() / 4.0
-			sy = MouseY() / 4.0
-			Gosub inversekamera
-			If tx >= 0 And ty >= 0 And tx < MAP_WIDTH And ty < MAP_HEIGHT Then
+			sxf = MouseX() / 4.0
+			syf = MouseY() / 4.0
+			Gosub inversekamerafloat
+			If txf >= 0 And tyf >= 0 And txf < MAP_WIDTH And tyf < MAP_HEIGHT Then
 				For i = 0 To 20
-					makeparticle(PARTICLE_FIRE, tx + 1, ty, 14, 0, 0, 80.0, 0, 0, -180, 0, 1000)
+					makeparticle(PARTICLE_FIRE, txf + 1, tyf, 14 + Rand(4), 0, 0, 80.0, 0, 0, -180, 0, 1000)
 				Next i
 			EndIf
 		EndIf
@@ -143,7 +143,7 @@ main:
 		If doublePx Then Gosub scalebuffer
 		DrawImage gbuffer, 0, 0
 		DrawScreen
-	Until KeyHit(cbkeyesc)
+	Until KeyHit(cbKeyESC)
 	Gosub unload
 Return
 
@@ -157,7 +157,6 @@ unload:
 Return
 
 updateCopter:
-	'If Not SoundPlaying(copterSound) Then copterSound = PlaySound(copterSoundFile)
 	For c.ENTITIES = Each ENTITIES
 		If c\etype = ENTITY_COPTER Then
 			// Move copter up and down
@@ -232,7 +231,7 @@ updateParticles:
 			p\xv = p\xv + p\xa * t#
 			p\yv = p\yv + p\ya * t#
 			p\zv = p\zv + p\za * t#
-			p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start + Rand(-p\l / 4, p\l / 4)) / Float(p\l)) * pFrames)))
+			p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start) / Float(p\l)) * pFrames)))
 			If Timer() > p\start + p\l Then
 				If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
 					Select p\t

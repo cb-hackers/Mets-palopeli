@@ -169,7 +169,11 @@ Return
 inversekamera:
 	tx = (sx*TH+sy*TW-cx*TH-cy*TW)/(TW*TH)
 	ty = (-sx*TH+sy*TW+cx*TH-cy*TW)/(TW*TH)
+Return
 
+inversekamerafloat:
+	txf# = (sxf#*TH+syf#*TW-cx*TH-cy*TW)/(TW*TH)
+	tyf# = (-sxf#*TH+syf#*TW+cx*TH-cy*TW)/(TW*TH)
 Return
 
 skipRendering:
