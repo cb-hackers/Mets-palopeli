@@ -19,9 +19,9 @@ credits(4) = "@ Tuhislanit  <3"
 // Menubutton properties.
 menuItems = 2
 menuX = 60
-menuY = 39
+menuY = 43
 menuW = 80
-menuH = 18
+menuH = 17
 
 Const MENU_PLAY = 0
 Const MENU_END = 1
