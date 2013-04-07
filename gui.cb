@@ -1,6 +1,6 @@
 
 gui=LoadImage("gfx/gui.png")
-minimap=MakeImage(50,50)
+minimap=MakeImage(50, 50)
 
 // Drawable game area.
 Const GUI_WINDOW_WIDTH = 144
@@ -86,26 +86,33 @@ updategui:
 Return
 
 drawgui:
-	DrawToImage minimap		
+
+	DrawToImage minimap	
 	Lock(minimap)
-	For x=0 To MAP_WIDTH-1 Step 2
-		For y=0 To MAP_HEIGHT-1 Step 2
+	// Draw minimap.
+	For x = 0 To MAP_WIDTH - 1 Step 2
+		For y = 0 To MAP_HEIGHT - 1 Step 2
 			id=mapTiles(x,y)
 			road=(id=TILE_ROAD)*50
-			Color Max(Min(heat(x,y)+road,255),0),(1+60*(id>=TILE_TREE1 And id<=TILE_TREE3)+road),Int(Min(255,-Min(Min(heat(x,y),255),0))+(id=TILE_WATER)*70)+road
-			Line x/2,y/2,x/2+1,y/2
+			rr = Max(Min(heat(x,y)+road,255),0)
+			gg = (1+60*(id>=TILE_TREE1 And id<=TILE_TREE3)+road)
+			bb = Min(255,-Min(Min(heat(x,y),255),0)+(id=TILE_WATER)*70)+road
+			Color rr,gg,bb
+			Line x / 2, y / 2, x / 2 + 1, y / 2
+			'PutPixel2 x / 2, y / 2, r Shl 16 + g Shl 8 + b
 		Next y
 	Next x
-	
-	sx=100
-	sy=75
+	// Draw camera location To minimap.
+	sx=74
+	sy=64
 	Gosub inversekamera
-	Color 255,255,255
-	PutPixel  tx/2,ty/2,255 Shl 16 + 255 Shl 8 + 255
+	If tx > 0 And ty > 0 And tx < MAP_WIDTH And ty < MAP_HEIGHT Then PutPixel tx/2,ty/2,255 Shl 16 + 255 Shl 8 + 255
 	Unlock
+
 	DrawToImage gbuffer
-	DrawImage minimap,147,3
 	DrawImage gui,0,0
+	DrawImage minimap,147,3
+	
 	For i=0 To 5
 		DrawImage guibuttons(i,i=guiaction),10+i*20,124
 	Next i

@@ -226,7 +226,7 @@ updateParticles:
 					If p\t = PARTICLE_FIRE Then
 						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) + 15
 					ElseIf p\t = PARTICLE_FOAM Then
-						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) - 15
+						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) - 10
 					EndIf
 				EndIf
 				If p\t = PARTICLE_SMOKE Then smokeCount - 1
