@@ -83,10 +83,17 @@ updategui:
 		Next c
 		guiaction = 0
 	EndIf
+
+	// Minimap navigation
+	If mouseIn(588, 12, 200, 200) And MouseDown(1) Then
+		mx = (612 - MouseX()) * 2
+		my = (16  - MouseY()) * 2
+		cx = (mx - my) * 2
+		cy = (mx + my)
+	EndIf
 Return
 
 drawgui:
-
 	DrawToImage minimap	
 	Lock(minimap)
 	// Draw minimap.
