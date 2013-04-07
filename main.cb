@@ -9,9 +9,10 @@ TITLE_STRING = GAME_TITLE + " " + VERSION_STRING + " " + RELEASE_TYPE
 
 // Map constants and routines
 Include "map.cb"
-Include "firespreading.cb"
 // Resources and rendering
 Include	"renderer.cb"
+
+Include "firespreading.cb"
 
 gBuffer = MakeImage(SW * 4,SH * 4)
 // GUI resources and routines
@@ -59,23 +60,22 @@ main:
 		// Draw to a buffer instead of screen.
 		DrawToImage gBuffer
 		Cls
-		
+
 		// Update delta time.
 		t# = (Timer() - lastUpdate) / 1000.0
 		lastUpdate = Timer()
-		
-		
+
 		Gosub updateFireSpreading
 
 		Gosub updategui
 
-		doublePx = Not KeyDown(cbkeyZ)
+		doublePx = Not KeyDown(cbKeyZ)
 		If doublePx Then Gosub updatecopter
-		
+
 		// Camera movement.
 		cx = cx + ( (LeftKey() Or KeyDown(cbkeya)) - (RightKey() Or KeyDown(cbkeyd)) ) * (1 + (Not doublePx) * 3) * 140 * t
 		cy = cy - ( (DownKey() Or KeyDown(cbkeys)) - (UpKey()    Or KeyDown(cbkeyw)) ) * (1 + (Not doublePx) * 3) * 140 * t
-	
+
 		If Not doublePx Then // Draw zoomed out.
 			// Center the camera
 			cx = cx + SW * 1.5 : cy = cy + SH * 1.5
@@ -94,9 +94,14 @@ main:
 			ylimit =  cx / 16 - cy / 8
 			For tx = Max(0, xlimit) To Min(xlimit + 30, MAP_WIDTH - 1)
 				For ty = Max(0, ylimit - 10) To Min(ylimit + 21, MAP_HEIGHT - 1)
-					burning = Min(Max(heat(tx, ty) * (burnTimes(tx, ty) > 0) / 100.0, 0), 1)
+					h = heat(tx, ty)
+					burning = Min(Max(h * (burnTimes(tx, ty) > 0) / 100.0, 0), 1)
 					id = mapTiles(tx, ty)
 					Gosub drawTile
+					If h > 20 And h < 150 + Rand(-50, 50) And Rand(5) = 1 And id <> TILE_WATER And smokeCount < MAX_SMOKE Then
+						makeparticle(PARTICLE_SMOKE, tx, ty, 1, 0, 0, h * 0.6, 0, 0, Rand(1, 4), 1100 + Rand(-100, 100))
+						smokeCount + 1
+					EndIf
 				Next ty
 				ttx = tx
 				For c.ENTITIES = Each ENTITIES
@@ -133,7 +138,7 @@ main:
 			Gosub inversekamerafloat
 			If txf >= 0 And tyf >= 0 And txf < MAP_WIDTH And tyf < MAP_HEIGHT Then
 				For i = 0 To 20
-					makeparticle(PARTICLE_FIRE, txf + 1, tyf, 14 + Rand(4), 0, 0, 80.0, 0, 0, -180, 0, 1000 + Rand(-100, 100))
+					makeparticle(PARTICLE_FIRE, txf + 1, tyf, 14 + Rand(4), 0, 0, 80.0, 0, 0, -180, 1000 + Rand(-100, 100))
 				Next i
 			EndIf
 		EndIf
@@ -188,9 +193,9 @@ updateCopter:
 			EndIf
 			
 			// If we're inside the map area And we need To spray, create foam.
-			If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH - 1 And c\ty < MAP_HEIGHT - 1 And c\start Then
+			If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT And c\start Then
 				For i = 0 To 10
-					makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550 + Rand(-20, 20))
+					makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rnd(5), c\xv, c\yv, -40, Rnd(-5, 5), Rnd(-3, 3), -40, c\z / 30 * 550 + Rand(-20, 20))
 				Next i
 			EndIf
 		EndIf
@@ -217,13 +222,14 @@ updateParticles:
 			p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start) / Float(p\l)) * pFrames)))
 			// Check life Time.
 			If Timer() > p\start + p\l Or p\z =< 0 Then
-				If  p\tx >= 0 And p\tx < MAP_WIDTH - 1 And p\ty >= 0 And p\ty < MAP_HEIGHT - 1 Then
+				If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 And p\ty < MAP_HEIGHT Then
 					If p\t = PARTICLE_FIRE Then
 						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) + 15
 					ElseIf p\t = PARTICLE_FOAM Then
 						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) - 15
 					EndIf
 				EndIf
+				If p\t = PARTICLE_SMOKE Then smokeCount - 1
 				Delete p
 			EndIf
 		EndIf
