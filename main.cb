@@ -126,7 +126,7 @@ main:
 			Gosub drawgui
 		EndIf
 
-		// NAPALMI
+		// NAPALM
 		If MouseDown(2) Then
 			sxf = MouseX() / 4.0
 			syf = MouseY() / 4.0
@@ -138,7 +138,7 @@ main:
 			EndIf
 		EndIf
 		
-		// Draw doublepixel buffer And SCREEN
+		// Draw doublepixel buffer And SCREEN.
 		DrawToScreen
 		If doublePx Then Gosub scalebuffer
 		DrawImage gbuffer, 0, 0
@@ -175,26 +175,26 @@ updateCopter:
 					d# = Distance(c\tx, c\ty, wp\lx, wp\ly)
 				EndIf
 				
-				// If we reach the goal, either start spraying Or change waypoint.
+				// If we reach the goal, toggle spraying And possibly change target waypoint.
 				If d < s Then
 					If c\start And wp\n Then c\wayPoint = wp\n
 					c\start = Not c\start
+				Else
+					c\xv =  Cos(ang) * s
+					c\yv = -Sin(ang) * s
+					c\tx = c\tx + c\xv
+					c\ty = c\ty + c\yv
 				EndIf
 				
-				c\xv =  Cos(ang) * s
-				c\yv = -Sin(ang) * s
-				c\tx = c\tx + c\xv
-				c\ty = c\ty + c\yv
+
 			EndIf
 			
-			If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT Then
-				If c\start Then
-					For i=0 To 10
-						makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550 + Rand(-20, 20))
-					Next i
-				EndIf
+			// If we're inside the map area And we need To spray, create foam.
+			If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT And c\start Then
+				For i = 0 To 10
+					makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550 + Rand(-20, 20))
+				Next i
 			EndIf
-			
 		EndIf
 	Next c
 Return
