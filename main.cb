@@ -185,12 +185,10 @@ updateCopter:
 					c\tx = c\tx + c\xv
 					c\ty = c\ty + c\yv
 				EndIf
-				
-
 			EndIf
 			
 			// If we're inside the map area And we need To spray, create foam.
-			If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH And c\ty < MAP_HEIGHT And c\start Then
+			If c\tx >= 0 And c\ty >= 0 And c\tx < MAP_WIDTH - 1 And c\ty < MAP_HEIGHT - 1 And c\start Then
 				For i = 0 To 10
 					makeparticle(PARTICLE_FOAM, c\tx + 1, c\ty, c\z + 10 - Rand(4), c\xv, c\yv, -40.0, 0, 0, -40, 0, c\z / 30 * 550 + Rand(-20, 20))
 				Next i
@@ -203,25 +201,28 @@ updateParticles:
 	Lock()
 	For p.ENTITIES = Each ENTITIES
 		If p\etype = ENTITY_PARTICLE Then
+			// Draw particle.
 			txf# = p\tx
 			tyf# = p\ty
 			Gosub kamerafloat
 			If sxf => 0 And syf => 0 And sxf < GUI_WINDOW_WIDTH And syf - p\z < GUI_WINDOW_HEIGHT Then PutPixel2 sxf, syf - p\z, pColors(p\t, p\f)
-			p\tx = p\tx + (p\xv + WIND_SPEED_X * 0.2) * t#
-			p\ty = p\ty + (p\yv + WIND_SPEED_Y * 0.2) * t#
-			p\z = p\z + p\zv * t#
-			p\xv = p\xv + p\xa * t#
-			p\yv = p\yv + p\ya * t#
-			p\zv = p\zv + p\za * t#
+			// Update particle position.
+			p\tx = p\tx + (p\xv + WIND_SPEED_X * 0.2) * t
+			p\ty = p\ty + (p\yv + WIND_SPEED_Y * 0.2) * t
+			p\z  = p\z  + p\zv * t
+			p\xv = p\xv + p\xa * t
+			p\yv = p\yv + p\ya * t
+			p\zv = p\zv + p\za * t
+			// Update animation.
 			p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start) / Float(p\l)) * pFrames)))
+			// Check life Time.
 			If Timer() > p\start + p\l Then
-				If  p\tx >= 0 And p\tx < MAP_WIDTH And p\ty >= 0 and p\ty < MAP_HEIGHT Then
-					Select p\t
-						Case 0 // PARTICLE_FIRE
-							heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) + 15
-						Case 2 // PARTICLE_FOAM
-							heat(Int(p\tx),Int(p\ty)) = heat(Int(p\tx),Int(p\ty)) - 15
-					EndSelect
+				If  p\tx >= 0 And p\tx < MAP_WIDTH - 1 And p\ty >= 0 and p\ty < MAP_HEIGHT - 1 Then
+					If p\t = PARTICLE_FIRE Then
+						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) + 15
+					ElseIf p\t = PARTICLE_FOAM Then
+						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) - 15
+					EndIf
 				EndIf
 				Delete p
 			EndIf
@@ -230,18 +231,19 @@ updateParticles:
 	Unlock
 Return
 
-
 scaleBuffer:
-	For sb_i=SH To 0 Step -1
-		CopyBox 0, sb_i,SH*4,1,0, sb_i*4,Image(gBuffer),Image(gBuffer)
-		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+1,Image(gBuffer),Image(gBuffer)
-		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+2,Image(gBuffer),Image(gBuffer)
-		CopyBox 0, sb_i,SH*4,1,0, sb_i*4+3,Image(gBuffer),Image(gBuffer)
-	Next sb_i
-	For sb_i=SW To 0 Step -1
-		CopyBox sb_i,0,1,SW*4,sb_i*4,0,Image(gBuffer),Image(gBuffer)
-		CopyBox sb_i,0,1,SW*4,sb_i*4+1,0,Image(gBuffer),Image(gBuffer)
-		CopyBox sb_i,0,1,SW*4,sb_i*4+2,0,Image(gBuffer),Image(gBuffer)
-		CopyBox sb_i,0,1,SW*4,sb_i*4+3,0,Image(gBuffer),Image(gBuffer)
-	Next sb_i
+	// Scale 200x150 x 4 -> 800x600
+	i = Image(gBuffer)
+	For y = SH To 0 Step -1
+		CopyBox 0, y, SH * 4, 1, 0, y * 4    , i, i
+		CopyBox 0, y, SH * 4, 1, 0, y * 4 + 1, i, i
+		CopyBox 0, y, SH * 4, 1, 0, y * 4 + 2, i, i
+		CopyBox 0, y, SH * 4, 1, 0, y * 4 + 3, i, i
+	Next y
+	For x = SW To 0 Step -1
+		CopyBox x, 0, 1, SW * 4, x * 4    , 0, i, i
+		CopyBox x, 0, 1, SW * 4, x * 4 + 1, 0, i, i
+		CopyBox x, 0, 1, SW * 4, x * 4 + 2, 0, i, i
+		CopyBox x, 0, 1, SW * 4, x * 4 + 3, 0, i, i
+	Next x
 Return
