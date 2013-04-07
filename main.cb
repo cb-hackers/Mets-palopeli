@@ -216,8 +216,8 @@ updateParticles:
 			// Update animation.
 			p\f = Min(pFrames - 1, Max(0, RoundDown(((Timer() - p\start) / Float(p\l)) * pFrames)))
 			// Check life Time.
-			If Timer() > p\start + p\l Then
-				If  p\tx >= 0 And p\tx < MAP_WIDTH - 1 And p\ty >= 0 and p\ty < MAP_HEIGHT - 1 Then
+			If Timer() > p\start + p\l Or p\z =< 0 Then
+				If  p\tx >= 0 And p\tx < MAP_WIDTH - 1 And p\ty >= 0 And p\ty < MAP_HEIGHT - 1 Then
 					If p\t = PARTICLE_FIRE Then
 						heat(Int(p\tx), Int(p\ty)) = heat(Int(p\tx), Int(p\ty)) + 15
 					ElseIf p\t = PARTICLE_FOAM Then
